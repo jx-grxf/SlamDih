@@ -21,23 +21,26 @@ It is built as a private, local-first macOS tool. No sensor data leaves the mach
 
 # Menu
 
-![SlamDih macOS showcase](docs/showcase/slamdih-showcase.svg)
+![SlamDih macOS showcase](docs/showcase/monitor-slamdih.jpeg)
 
 ---
 
 ## Contents
 
-- [Highlights](#highlights)
-- [Why This Exists](#why-this-exists)
-- [Current Workflow](#current-workflow)
-- [Tech Stack](#tech-stack)
-- [Requirements](#requirements)
-- [Quick Start](#quick-start)
-- [Usage](#usage)
-- [Development](#development)
-- [Research Notes](#research-notes)
-- [Roadmap](#roadmap)
-- [License](#license)
+- [SlamDih](#slamdih)
+- [Menu](#menu)
+  - [Contents](#contents)
+  - [Highlights](#highlights)
+  - [Why This Exists](#why-this-exists)
+  - [Current Workflow](#current-workflow)
+  - [Tech Stack](#tech-stack)
+  - [Requirements](#requirements)
+  - [Quick Start](#quick-start)
+  - [Usage](#usage)
+  - [Development](#development)
+  - [Research Notes](#research-notes)
+  - [Roadmap](#roadmap)
+  - [License](#license)
 
 ---
 
