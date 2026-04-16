@@ -48,7 +48,7 @@ struct ContentView: View {
             case .calibration:
                 CalibrationView(monitor: monitor)
             case .about:
-                AboutView(monitor: monitor)
+                AboutView()
             }
         }
     }
