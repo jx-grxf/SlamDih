@@ -6,9 +6,10 @@ APP_NAME="SlamDih"
 VERSION="${1:-0.1.0}"
 BUILD_ROOT="$ROOT_DIR/.build/xcode-release"
 DMG_ROOT="$ROOT_DIR/.build/dmg"
-STAGING_DIR="$DMG_ROOT/staging"
 APP_PATH="$BUILD_ROOT/Release/$APP_NAME.app"
 DMG_PATH="$DMG_ROOT/$APP_NAME-$VERSION.dmg"
+CREATE_DMG_PACKAGE="${CREATE_DMG_PACKAGE:-create-dmg@8.1.0}"
+CREATE_DMG_OUTPUT="$DMG_ROOT/$APP_NAME $VERSION.dmg"
 
 if [[ -z "${DEVELOPER_DIR:-}" && -d /Applications/Xcode.app/Contents/Developer ]]; then
   export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
@@ -34,16 +35,19 @@ fi
 codesign --force --deep --sign - "$APP_PATH"
 codesign --verify --deep --strict "$APP_PATH"
 
-mkdir -p "$STAGING_DIR"
-ditto "$APP_PATH" "$STAGING_DIR/$APP_NAME.app"
-ln -s /Applications "$STAGING_DIR/Applications"
+rm -f "$CREATE_DMG_OUTPUT" "$DMG_PATH"
+npx --yes "$CREATE_DMG_PACKAGE" "$APP_PATH" "$DMG_ROOT" \
+  --overwrite \
+  --no-code-sign \
+  --dmg-title="$APP_NAME $VERSION"
 
-hdiutil create \
-  -volname "$APP_NAME $VERSION" \
-  -srcfolder "$STAGING_DIR" \
-  -ov \
-  -format UDZO \
-  "$DMG_PATH"
+if [[ ! -f "$CREATE_DMG_OUTPUT" ]]; then
+  echo "Expected create-dmg output not found at $CREATE_DMG_OUTPUT" >&2
+  exit 1
+fi
+
+mv "$CREATE_DMG_OUTPUT" "$DMG_PATH"
+hdiutil verify "$DMG_PATH"
 
 shasum -a 256 "$DMG_PATH" > "$DMG_PATH.sha256"
 
