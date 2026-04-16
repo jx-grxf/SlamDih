@@ -1,0 +1,13 @@
+.build/
+.swiftpm/
+DerivedData/
+build/
+.vscode/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcuserstate
+*.o
+*.dSYM/
+node_modules/
+.DS_Store
+*.log
