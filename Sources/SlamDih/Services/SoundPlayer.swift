@@ -40,7 +40,7 @@ final class SoundPlayer {
 
     init() {
         for sound in SlapSound.allCases {
-            guard let url = Bundle.module.url(forResource: sound.resourceName, withExtension: "mp3") else {
+            guard let url = Self.resourceURL(for: sound) else {
                 continue
             }
 
@@ -65,5 +65,15 @@ final class SoundPlayer {
 
         player.currentTime = 0
         player.play()
+    }
+
+    private static func resourceURL(for sound: SlapSound) -> URL? {
+        #if SWIFT_PACKAGE
+        if let packageURL = Bundle.module.url(forResource: sound.resourceName, withExtension: "mp3") {
+            return packageURL
+        }
+        #endif
+
+        return Bundle.main.url(forResource: sound.resourceName, withExtension: "mp3")
     }
 }

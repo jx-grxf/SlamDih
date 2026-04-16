@@ -29,6 +29,16 @@ struct AboutView: View {
                         .foregroundStyle(.secondary)
                     Text("macOS 14+")
                 }
+                GridRow {
+                    Text("Author")
+                        .foregroundStyle(.secondary)
+                    Text("Johannes Grof (MIT)")
+                }
+                GridRow {
+                    Text("Repository")
+                        .foregroundStyle(.secondary)
+                    Link("github.com/jx-grxf/SlamDih", destination: URL(string: "https://github.com/jx-grxf/SlamDih")!)
+                }
             }
             .font(.title3)
 

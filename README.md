@@ -115,6 +115,12 @@ Create a simple `.app` bundle:
 open .build/release/SlamDih.app
 ```
 
+Open the native Xcode project for app icon editing, signing, archives, and normal macOS app work:
+
+```bash
+open SlamDih.xcodeproj
+```
+
 ---
 
 ## Usage
@@ -145,6 +151,12 @@ Package the app:
 
 ```bash
 ./scripts/package-app.sh
+```
+
+Build through Xcode:
+
+```bash
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project SlamDih.xcodeproj -scheme SlamDih -configuration Debug -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build
 ```
 
 ---
