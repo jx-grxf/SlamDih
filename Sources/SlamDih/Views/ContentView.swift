@@ -24,32 +24,93 @@ struct ContentView: View {
     @State private var selection: AppSection = .monitor
 
     var body: some View {
-        NavigationSplitView {
-            List(AppSection.allCases, selection: $selection) { section in
-                Label(section.rawValue, systemImage: section.symbol)
-                    .symbolRenderingMode(.hierarchical)
-                    .tag(section)
-            }
-            .navigationSplitViewColumnWidth(min: 180, ideal: 210)
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        monitor.toggleMonitoring()
-                    } label: {
-                        Image(systemName: monitor.isMonitoring ? "stop.fill" : "play.fill")
-                    }
-                    .help(monitor.isMonitoring ? "Stop monitoring" : "Start monitoring")
+        HStack(spacing: 0) {
+            SidebarView(selection: $selection, monitor: monitor)
+
+            Divider()
+                .overlay(Color.white.opacity(0.08))
+
+            detailView
+                .id(selection)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+        .background(Color(red: 0.07, green: 0.08, blue: 0.09))
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    monitor.toggleMonitoring()
+                } label: {
+                    Image(systemName: monitor.isMonitoring ? "stop.fill" : "play.fill")
                 }
-            }
-        } detail: {
-            switch selection {
-            case .monitor:
-                MonitorView(monitor: monitor)
-            case .calibration:
-                CalibrationView(monitor: monitor)
-            case .about:
-                AboutView()
+                .help(monitor.isMonitoring ? "Stop monitoring" : "Start monitoring")
             }
         }
+    }
+
+    @ViewBuilder
+    private var detailView: some View {
+        switch selection {
+        case .monitor:
+            MonitorView(monitor: monitor)
+        case .calibration:
+            CalibrationView(monitor: monitor)
+        case .about:
+            AboutView()
+        }
+    }
+}
+
+private struct SidebarView: View {
+    @Binding var selection: AppSection
+    let monitor: SlapMonitor
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Spacer()
+                .frame(height: 48)
+
+            ForEach(AppSection.allCases) { section in
+                Button {
+                    selection = section
+                } label: {
+                    HStack(spacing: 10) {
+                        Image(systemName: section.symbol)
+                            .symbolRenderingMode(.hierarchical)
+                            .frame(width: 20)
+
+                        Text(section.rawValue)
+                            .font(.callout.weight(.semibold))
+
+                        Spacer()
+                    }
+                    .foregroundStyle(selection == section ? .white : .white.opacity(0.64))
+                    .padding(.horizontal, 12)
+                    .frame(height: 38)
+                    .background(selection == section ? Color.white.opacity(0.13) : Color.clear, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+                }
+                .buttonStyle(.plain)
+                .help(section.rawValue)
+            }
+
+            Spacer()
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text("Slaps")
+                    .font(.caption.weight(.semibold))
+                    .textCase(.uppercase)
+                    .foregroundStyle(.white.opacity(0.44))
+
+                Text("\(monitor.slapCount)")
+                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(.white.opacity(0.88))
+            }
+            .padding(.horizontal, 12)
+            .padding(.bottom, 18)
+        }
+        .padding(.horizontal, 12)
+        .frame(width: 208)
+        .frame(maxHeight: .infinity, alignment: .topLeading)
+        .background(Color(red: 0.05, green: 0.06, blue: 0.07))
     }
 }
