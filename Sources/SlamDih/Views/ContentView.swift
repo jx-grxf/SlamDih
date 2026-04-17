@@ -21,11 +21,15 @@ enum AppSection: String, CaseIterable, Identifiable {
 
 struct ContentView: View {
     @Bindable var monitor: SlapMonitor
+    let resetOnboarding: () -> Void
+
     @State private var selection: AppSection = .monitor
+    @State private var aboutClickCount = 0
+    @State private var lastAboutClickTime = Date.distantPast
 
     var body: some View {
         HStack(spacing: 0) {
-            SidebarView(selection: $selection, monitor: monitor)
+            SidebarView(selection: $selection, monitor: monitor, selectSection: selectSection)
 
             Divider()
                 .overlay(Color.white.opacity(0.08))
@@ -42,6 +46,7 @@ struct ContentView: View {
                 } label: {
                     Image(systemName: monitor.isMonitoring ? "stop.fill" : "play.fill")
                 }
+                .disabled(!monitor.sensorAvailability.canMonitor && !monitor.isMonitoring)
                 .help(monitor.isMonitoring ? "Stop monitoring" : "Start monitoring")
             }
         }
@@ -58,11 +63,32 @@ struct ContentView: View {
             AboutView()
         }
     }
+
+    private func selectSection(_ section: AppSection) {
+        selection = section
+
+        guard section == .about else {
+            aboutClickCount = 0
+            return
+        }
+
+        let now = Date()
+        aboutClickCount = now.timeIntervalSince(lastAboutClickTime) < 1.2 ? aboutClickCount + 1 : 1
+        lastAboutClickTime = now
+
+        guard aboutClickCount >= 3 else {
+            return
+        }
+
+        aboutClickCount = 0
+        resetOnboarding()
+    }
 }
 
 private struct SidebarView: View {
     @Binding var selection: AppSection
     let monitor: SlapMonitor
+    let selectSection: (AppSection) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -71,7 +97,7 @@ private struct SidebarView: View {
 
             ForEach(AppSection.allCases) { section in
                 Button {
-                    selection = section
+                    selectSection(section)
                 } label: {
                     HStack(spacing: 12) {
                         Image(systemName: section.symbol)
@@ -94,23 +120,63 @@ private struct SidebarView: View {
 
             Spacer()
 
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Slaps")
-                    .font(.caption.weight(.semibold))
-                    .textCase(.uppercase)
-                    .foregroundStyle(.white.opacity(0.44))
-
-                Text("\(monitor.slapCount)")
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
-                    .monospacedDigit()
-                    .foregroundStyle(.white.opacity(0.88))
-            }
-            .padding(.horizontal, 16)
-            .padding(.bottom, 18)
+            SidebarStatusView(monitor: monitor)
+                .padding(.horizontal, 16)
+                .padding(.bottom, 18)
         }
         .padding(.horizontal, 16)
         .frame(width: 208)
         .frame(maxHeight: .infinity, alignment: .topLeading)
         .background(Color(red: 0.05, green: 0.06, blue: 0.07))
+    }
+}
+
+private struct SidebarStatusView: View {
+    let monitor: SlapMonitor
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 9) {
+                Image(systemName: monitor.sensorAvailability.systemImage)
+                    .symbolRenderingMode(.hierarchical)
+                    .foregroundStyle(sensorTint)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Sensor")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                    Text(monitor.sensorStatusTitle)
+                        .font(.callout.weight(.semibold))
+                }
+            }
+
+            Divider()
+
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Slaps")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                    Text("\(monitor.slapCount)")
+                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                        .monospacedDigit()
+                }
+
+                Spacer()
+
+                StatusPill(isActive: monitor.isMonitoring, text: monitor.status)
+            }
+        }
+    }
+
+    private var sensorTint: Color {
+        switch monitor.sensorAvailability {
+        case .checking:
+            .cyan
+        case .detected:
+            .mint
+        case .unsupported:
+            .orange
+        }
     }
 }
