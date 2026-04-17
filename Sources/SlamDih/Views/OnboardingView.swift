@@ -7,6 +7,7 @@ struct OnboardingView: View {
     @State private var didStartCheck = false
     @State private var scannerRotation = 0.0
     @State private var scannerPulse = false
+    @State private var hasAcceptedDamageDisclaimer = false
 
     var body: some View {
         ZStack {
@@ -50,6 +51,9 @@ struct OnboardingView: View {
                 }
 
                 Spacer(minLength: 30)
+
+                damageDisclaimer
+                    .padding(.bottom, 12)
 
                 diagnosticsRow
             }
@@ -99,7 +103,7 @@ struct OnboardingView: View {
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
             .tint(.mint)
-            .disabled(!monitor.sensorAvailability.canMonitor)
+            .disabled(!monitor.sensorAvailability.canMonitor || !hasAcceptedDamageDisclaimer)
 
             Button {
                 Task {
@@ -137,6 +141,29 @@ struct OnboardingView: View {
                 symbol: "memorychip",
                 tint: .cyan
             )
+        }
+    }
+
+    private var damageDisclaimer: some View {
+        Toggle(isOn: $hasAcceptedDamageDisclaimer) {
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Text("Important legal-ish wisdom:")
+                    .font(.callout.weight(.bold))
+                    .foregroundStyle(.white)
+
+                Text("I accept that SlamDih is not a MacBook insurance policy and Johannes is not liable if I hit this thing like I am trying to mine diamonds.")
+                    .font(.callout.weight(.medium))
+                    .foregroundStyle(.white.opacity(0.72))
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+        .toggleStyle(.checkbox)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(.mint.opacity(hasAcceptedDamageDisclaimer ? 0.46 : 0.18), lineWidth: 1)
         }
     }
 

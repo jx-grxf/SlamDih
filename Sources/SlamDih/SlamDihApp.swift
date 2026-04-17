@@ -120,29 +120,32 @@ private struct MenuBarPanel: View {
 
         Divider()
 
-        MenuBarStatRow(title: "Slaps", value: "\(monitor.slapCount)", symbol: "hand.raised.fill")
-        MenuBarStatRow(title: "Peak", value: "\(monitor.peakImpact.formatted(.number.precision(.fractionLength(2)))) g", symbol: "chart.line.uptrend.xyaxis")
-        MenuBarStatRow(title: "Impact", value: "\(monitor.currentImpact.formatted(.number.precision(.fractionLength(2)))) g", symbol: "bolt.fill")
-        MenuBarStatRow(title: "Rate", value: "\(monitor.samplesPerSecond) Hz", symbol: "speedometer")
-        MenuBarStatRow(title: "Sensor", value: monitor.sensorStatusTitle, symbol: monitor.sensorAvailability.systemImage)
-        MenuBarStatRow(title: "Sound", value: monitor.selectedSound.title, symbol: monitor.selectedSound.symbol)
+        MenuBarStatButton(title: "Slaps", value: "\(monitor.slapCount)", symbol: "hand.raised.fill")
+        MenuBarStatButton(title: "Peak", value: "\(monitor.peakImpact.formatted(.number.precision(.fractionLength(2)))) g", symbol: "chart.line.uptrend.xyaxis")
+        MenuBarStatButton(title: "Impact", value: "\(monitor.currentImpact.formatted(.number.precision(.fractionLength(2)))) g", symbol: "bolt.fill")
+        MenuBarStatButton(title: "Rate", value: "\(monitor.samplesPerSecond) Hz", symbol: "speedometer")
+        MenuBarStatButton(title: "Sensor", value: monitor.sensorStatusTitle, symbol: monitor.sensorAvailability.systemImage)
+        MenuBarStatButton(title: "Sound", value: monitor.selectedSound.title, symbol: monitor.selectedSound.symbol)
     }
 }
 
-private struct MenuBarStatRow: View {
+private struct MenuBarStatButton: View {
     let title: String
     let value: String
     let symbol: String
 
     var body: some View {
-        Label {
-            HStack {
-                Text(title)
-                Spacer()
-                Text(value)
-            }
-        } icon: {
-            Image(systemName: symbol)
+        Button {
+            copyStat()
+        } label: {
+            Label("\(title): \(value)", systemImage: symbol)
         }
+        .help("Copy \(title.lowercased())")
+    }
+
+    private func copyStat() {
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setString("\(title): \(value)", forType: .string)
     }
 }
