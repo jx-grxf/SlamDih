@@ -8,6 +8,10 @@ struct OnboardingView: View {
     @State private var scannerRotation = 0.0
     @State private var scannerPulse = false
     @State private var hasAcceptedDamageDisclaimer = false
+    @State private var isSoundTestActive = false
+    @State private var hasCompletedSoundTest = false
+    @State private var soundTestSlapBaseline = 0
+    @State private var thresholdBeforeSoundTest: Double?
 
     var body: some View {
         ZStack {
@@ -25,7 +29,7 @@ struct OnboardingView: View {
                                 .font(.system(size: 18, weight: .bold, design: .rounded))
                                 .foregroundStyle(.mint)
 
-                            Text(monitor.sensorAvailability.title)
+                            Text(title)
                                 .font(.system(size: 52, weight: .bold, design: .rounded))
                                 .lineLimit(2)
                                 .minimumScaleFactor(0.78)
@@ -75,7 +79,17 @@ struct OnboardingView: View {
                 scannerRotation = 360
             }
 
-            await monitor.checkSensorAvailability()
+            await runAvailabilityCheck()
+        }
+        .onChange(of: monitor.slapCount) { _, newValue in
+            guard isSoundTestActive, !hasCompletedSoundTest, newValue > soundTestSlapBaseline else {
+                return
+            }
+
+            completeSoundTest()
+        }
+        .onDisappear {
+            stopSoundTestIfNeeded()
         }
     }
 
@@ -95,6 +109,7 @@ struct OnboardingView: View {
     private var actionRow: some View {
         HStack(spacing: 12) {
             Button {
+                finishOnboarding()
                 startApp()
             } label: {
                 Label("Start using SlamDih", systemImage: "arrow.right.circle.fill")
@@ -103,11 +118,11 @@ struct OnboardingView: View {
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
             .tint(.mint)
-            .disabled(!monitor.sensorAvailability.canMonitor || !hasAcceptedDamageDisclaimer)
+            .disabled(!monitor.sensorAvailability.canMonitor || !hasCompletedSoundTest || !hasAcceptedDamageDisclaimer)
 
             Button {
                 Task {
-                    await monitor.checkSensorAvailability()
+                    await runAvailabilityCheck()
                 }
             } label: {
                 Label("Check Again", systemImage: "arrow.clockwise")
@@ -136,6 +151,13 @@ struct OnboardingView: View {
             )
 
             OnboardingStatusItem(
+                title: "Sound Test",
+                value: soundTestStatusTitle,
+                symbol: soundTestSymbol,
+                tint: soundTestTint
+            )
+
+            OnboardingStatusItem(
                 title: "Engine",
                 value: "Local HID",
                 symbol: "memorychip",
@@ -158,6 +180,8 @@ struct OnboardingView: View {
             }
         }
         .toggleStyle(.checkbox)
+        .disabled(!hasCompletedSoundTest)
+        .opacity(hasCompletedSoundTest ? 1 : 0.58)
         .padding(.horizontal, 16)
         .padding(.vertical, 12)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
@@ -167,15 +191,56 @@ struct OnboardingView: View {
         }
     }
 
+    private var title: String {
+        switch monitor.sensorAvailability {
+        case .checking:
+            "Checking accelerometer"
+        case .detected where hasCompletedSoundTest:
+            "Sound test passed"
+        case .detected:
+            "Now slap your MacBook"
+        case .unsupported:
+            "Your Mac is not supported"
+        }
+    }
+
     private var description: String {
         switch monitor.sensorAvailability {
         case .checking:
             "SlamDih is checking the Apple SPU accelerometer required for live impact monitoring."
+        case .detected where hasCompletedSoundTest:
+            "The test slap triggered \(monitor.selectedSoundTitle). You can accept the agreement and enter the app."
+        case .detected where isSoundTestActive:
+            "SlamDih lowered the onboarding threshold to 0.05 g. Slap your MacBook once to verify the sound path."
         case .detected:
-            "Everything needed for live slap detection is available on this Mac."
+            "Everything needed for live slap detection is available on this Mac. Preparing the sound test."
         case .unsupported:
             "SlamDih needs a MacBook with an Apple SPU accelerometer. This Mac cannot run live monitoring."
         }
+    }
+
+    private var soundTestStatusTitle: String {
+        if hasCompletedSoundTest {
+            return "Passed"
+        }
+
+        if isSoundTestActive {
+            return "Slap now"
+        }
+
+        return monitor.sensorAvailability == .checking ? "Waiting" : "Pending"
+    }
+
+    private var soundTestSymbol: String {
+        hasCompletedSoundTest ? "checkmark.circle.fill" : "speaker.wave.2.fill"
+    }
+
+    private var soundTestTint: Color {
+        if hasCompletedSoundTest {
+            return .mint
+        }
+
+        return isSoundTestActive ? .yellow : .white.opacity(0.56)
     }
 
     private var sensorTint: Color {
@@ -187,6 +252,68 @@ struct OnboardingView: View {
         case .unsupported:
             .orange
         }
+    }
+
+    private func runAvailabilityCheck() async {
+        resetOnboardingGate()
+        await monitor.checkSensorAvailability()
+        startSoundTestIfPossible()
+    }
+
+    private func startSoundTestIfPossible() {
+        guard monitor.sensorAvailability.canMonitor else {
+            return
+        }
+
+        thresholdBeforeSoundTest = monitor.threshold
+        monitor.threshold = SlapMonitor.thresholdRange.lowerBound
+        soundTestSlapBaseline = monitor.slapCount
+        isSoundTestActive = true
+        monitor.startMonitoring()
+
+        if monitor.isMonitoring {
+            monitor.status = "Sound test listening"
+        } else {
+            isSoundTestActive = false
+            restoreThresholdIfNeeded()
+        }
+    }
+
+    private func completeSoundTest() {
+        isSoundTestActive = false
+        hasCompletedSoundTest = true
+        monitor.stopMonitoring()
+        restoreThresholdIfNeeded()
+        monitor.status = "Sound test passed"
+    }
+
+    private func resetOnboardingGate() {
+        hasAcceptedDamageDisclaimer = false
+        hasCompletedSoundTest = false
+        stopSoundTestIfNeeded()
+    }
+
+    private func finishOnboarding() {
+        stopSoundTestIfNeeded()
+        monitor.resetCounter()
+    }
+
+    private func stopSoundTestIfNeeded() {
+        if isSoundTestActive || monitor.isMonitoring {
+            monitor.stopMonitoring()
+        }
+
+        isSoundTestActive = false
+        restoreThresholdIfNeeded()
+    }
+
+    private func restoreThresholdIfNeeded() {
+        guard let thresholdBeforeSoundTest else {
+            return
+        }
+
+        monitor.threshold = thresholdBeforeSoundTest
+        self.thresholdBeforeSoundTest = nil
     }
 }
 

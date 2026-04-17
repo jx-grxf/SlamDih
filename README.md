@@ -128,6 +128,7 @@ open SlamDih.xcodeproj
 
 ## Usage
 
+- On first launch, complete the availability check, trigger the onboarding sound test with one slap, then accept the agreement.
 - Start monitoring from the toolbar, menu bar extra, or `Command-R`.
 - Use the threshold slider to tune detection.
 - Choose `Slap`, `Fart`, `Yowch`, or `Whip` in the sound picker; enable NSFW sounds in Settings to unlock `Sexy`.
