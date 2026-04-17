@@ -49,6 +49,8 @@ struct OnboardingView: View {
 
                     SensorScannerView(
                         availability: monitor.sensorAvailability,
+                        isSoundTestActive: isSoundTestActive,
+                        hasCompletedSoundTest: hasCompletedSoundTest,
                         rotation: scannerRotation,
                         isPulsing: scannerPulse
                     )
@@ -265,6 +267,7 @@ struct OnboardingView: View {
             return
         }
 
+        scannerPulse = true
         thresholdBeforeSoundTest = monitor.threshold
         monitor.threshold = SlapMonitor.thresholdRange.lowerBound
         soundTestSlapBaseline = monitor.slapCount
@@ -282,9 +285,15 @@ struct OnboardingView: View {
     private func completeSoundTest() {
         isSoundTestActive = false
         hasCompletedSoundTest = true
+        scannerPulse = false
+        scannerRotation = 0
         monitor.stopMonitoring()
         restoreThresholdIfNeeded()
         monitor.status = "Sound test passed"
+
+        withAnimation(.easeInOut(duration: 0.85)) {
+            scannerRotation = 360
+        }
     }
 
     private func resetOnboardingGate() {
@@ -319,39 +328,67 @@ struct OnboardingView: View {
 
 private struct SensorScannerView: View {
     let availability: SensorAvailability
+    let isSoundTestActive: Bool
+    let hasCompletedSoundTest: Bool
     let rotation: Double
     let isPulsing: Bool
+
+    @State private var breathesOut = false
+    @State private var successScale = 1.0
 
     var body: some View {
         ZStack {
             Circle()
                 .fill(.ultraThinMaterial)
-                .frame(width: 236, height: 236)
+                .frame(width: innerCircleSize, height: innerCircleSize)
+                .shadow(color: glowTint.opacity(glowOpacity), radius: glowRadius)
                 .overlay {
                     Circle()
-                        .stroke(.white.opacity(0.14), lineWidth: 1)
+                        .stroke(glowTint.opacity(innerStrokeOpacity), lineWidth: 1.4)
                 }
+                .animation(.easeInOut(duration: 1.15).repeatForever(autoreverses: true), value: isSoundTestActive ? breathesOut : false)
 
             Circle()
                 .trim(from: 0.08, to: 0.72)
-                .stroke(scannerTint.gradient, style: StrokeStyle(lineWidth: 7, lineCap: .round))
-                .frame(width: 282, height: 282)
-                .rotationEffect(.degrees(availability == .checking ? rotation : 0))
-                .opacity(availability == .checking ? 1 : 0.52)
+                .stroke(arcTint.gradient, style: StrokeStyle(lineWidth: arcLineWidth, lineCap: .round))
+                .frame(width: arcSize, height: arcSize)
+                .shadow(color: arcTint.opacity(glowOpacity), radius: glowRadius)
+                .rotationEffect(.degrees(shouldRotateArc ? rotation : 0))
+                .opacity(arcOpacity)
+                .animation(.spring(response: 0.42, dampingFraction: 0.8), value: hasCompletedSoundTest)
+                .animation(.easeInOut(duration: 1.15).repeatForever(autoreverses: true), value: isSoundTestActive ? breathesOut : false)
 
             Circle()
-                .stroke(scannerTint.opacity(0.2), lineWidth: 22)
-                .frame(width: isPulsing ? 314 : 244, height: isPulsing ? 314 : 244)
-                .opacity(availability == .checking ? 0.8 : 0)
+                .stroke(pulseTint.opacity(0.2), lineWidth: 22)
+                .frame(width: pulseSize, height: pulseSize)
+                .opacity(pulseOpacity)
                 .animation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true), value: isPulsing)
 
             Image(systemName: availability.systemImage)
                 .font(.system(size: 76, weight: .semibold))
                 .symbolRenderingMode(.hierarchical)
                 .foregroundStyle(scannerTint)
+                .scaleEffect(successScale)
+                .animation(.spring(response: 0.26, dampingFraction: 0.52), value: successScale)
         }
         .frame(width: 330, height: 330)
         .accessibilityLabel(availability.title)
+        .onAppear {
+            breathesOut = true
+        }
+        .onChange(of: hasCompletedSoundTest) { _, didComplete in
+            guard didComplete else {
+                successScale = 1
+                return
+            }
+
+            successScale = 1.18
+
+            Task { @MainActor in
+                try? await Task.sleep(for: .milliseconds(260))
+                successScale = 1
+            }
+        }
     }
 
     private var scannerTint: Color {
@@ -363,6 +400,98 @@ private struct SensorScannerView: View {
         case .unsupported:
             .orange
         }
+    }
+
+    private var glowTint: Color {
+        if hasCompletedSoundTest {
+            return .mint
+        }
+
+        return isSoundTestActive ? .cyan : .white
+    }
+
+    private var pulseTint: Color {
+        isSoundTestActive ? .cyan : scannerTint
+    }
+
+    private var arcTint: Color {
+        hasCompletedSoundTest ? .mint : scannerTint
+    }
+
+    private var shouldRotateArc: Bool {
+        availability == .checking || hasCompletedSoundTest
+    }
+
+    private var innerCircleSize: CGFloat {
+        guard isSoundTestActive && !hasCompletedSoundTest else {
+            return 236
+        }
+
+        return breathesOut ? 250 : 226
+    }
+
+    private var arcSize: CGFloat {
+        guard isSoundTestActive && !hasCompletedSoundTest else {
+            return 282
+        }
+
+        return breathesOut ? 302 : 270
+    }
+
+    private var arcLineWidth: CGFloat {
+        isSoundTestActive || hasCompletedSoundTest ? 8 : 7
+    }
+
+    private var arcOpacity: Double {
+        if availability == .checking {
+            return 1
+        }
+
+        if isSoundTestActive || hasCompletedSoundTest {
+            return 0.96
+        }
+
+        return 0.52
+    }
+
+    private var pulseSize: CGFloat {
+        if isSoundTestActive && !hasCompletedSoundTest {
+            return breathesOut ? 326 : 260
+        }
+
+        return isPulsing ? 314 : 244
+    }
+
+    private var pulseOpacity: Double {
+        if isSoundTestActive && !hasCompletedSoundTest {
+            return 0.82
+        }
+
+        return availability == .checking ? 0.8 : 0
+    }
+
+    private var glowOpacity: Double {
+        if isSoundTestActive && !hasCompletedSoundTest {
+            return breathesOut ? 0.72 : 0.34
+        }
+
+        return hasCompletedSoundTest ? 0.54 : 0
+    }
+
+    private var glowRadius: CGFloat {
+        if isSoundTestActive && !hasCompletedSoundTest {
+            return breathesOut ? 28 : 14
+        }
+
+        return hasCompletedSoundTest ? 20 : 0
+    }
+
+    private var innerStrokeOpacity: Double {
+        if isSoundTestActive && !hasCompletedSoundTest {
+            return breathesOut ? 0.34 : 0.18
+        }
+
+        return hasCompletedSoundTest ? 0.28 : 0.14
     }
 }
 
