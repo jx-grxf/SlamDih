@@ -364,7 +364,7 @@ private struct SensorScannerView: View {
                 .opacity(pulseOpacity)
                 .animation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true), value: isPulsing)
 
-            Image(systemName: availability.systemImage)
+            Image(systemName: scannerSymbol)
                 .font(.system(size: 76, weight: .semibold))
                 .symbolRenderingMode(.hierarchical)
                 .foregroundStyle(scannerTint)
@@ -392,13 +392,22 @@ private struct SensorScannerView: View {
     }
 
     private var scannerTint: Color {
-        switch availability {
-        case .checking:
-            .cyan
-        case .detected:
+        if hasCompletedSoundTest {
             .mint
-        case .unsupported:
+        } else if availability == .unsupported {
             .orange
+        } else {
+            .cyan
+        }
+    }
+
+    private var scannerSymbol: String {
+        if hasCompletedSoundTest {
+            "checkmark.seal.fill"
+        } else if availability == .unsupported {
+            availability.systemImage
+        } else {
+            "waveform.path.ecg"
         }
     }
 
