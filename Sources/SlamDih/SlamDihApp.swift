@@ -10,8 +10,10 @@ struct SlamDihApp: App {
     var body: some Scene {
         WindowGroup("SlamDih", id: "main") {
             if hasCompletedOnboarding {
-                ContentView(monitor: monitor)
-                    .frame(minWidth: 920, minHeight: 620)
+                ContentView(monitor: monitor) {
+                    resetOnboarding()
+                }
+                .frame(minWidth: 920, minHeight: 620)
             } else {
                 OnboardingView(monitor: monitor) {
                     finishOnboarding()
@@ -67,6 +69,13 @@ struct SlamDihApp: App {
 
     private func finishOnboarding() {
         hasCompletedOnboarding = true
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
+    private func resetOnboarding() {
+        hasCompletedOnboarding = false
+        monitor.stopMonitoring()
+        monitor.resetCounter()
         NSApp.activate(ignoringOtherApps: true)
     }
 }

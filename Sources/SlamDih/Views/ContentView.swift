@@ -21,11 +21,15 @@ enum AppSection: String, CaseIterable, Identifiable {
 
 struct ContentView: View {
     @Bindable var monitor: SlapMonitor
+    let resetOnboarding: () -> Void
+
     @State private var selection: AppSection = .monitor
+    @State private var aboutClickCount = 0
+    @State private var lastAboutClickTime = Date.distantPast
 
     var body: some View {
         HStack(spacing: 0) {
-            SidebarView(selection: $selection, monitor: monitor)
+            SidebarView(selection: $selection, monitor: monitor, selectSection: selectSection)
 
             Divider()
                 .overlay(Color.white.opacity(0.08))
@@ -59,11 +63,32 @@ struct ContentView: View {
             AboutView()
         }
     }
+
+    private func selectSection(_ section: AppSection) {
+        selection = section
+
+        guard section == .about else {
+            aboutClickCount = 0
+            return
+        }
+
+        let now = Date()
+        aboutClickCount = now.timeIntervalSince(lastAboutClickTime) < 1.2 ? aboutClickCount + 1 : 1
+        lastAboutClickTime = now
+
+        guard aboutClickCount >= 3 else {
+            return
+        }
+
+        aboutClickCount = 0
+        resetOnboarding()
+    }
 }
 
 private struct SidebarView: View {
     @Binding var selection: AppSection
     let monitor: SlapMonitor
+    let selectSection: (AppSection) -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -72,7 +97,7 @@ private struct SidebarView: View {
 
             ForEach(AppSection.allCases) { section in
                 Button {
-                    selection = section
+                    selectSection(section)
                 } label: {
                     HStack(spacing: 12) {
                         Image(systemName: section.symbol)
