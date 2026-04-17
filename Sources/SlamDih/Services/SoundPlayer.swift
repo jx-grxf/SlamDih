@@ -22,6 +22,10 @@ enum SlapSound: String, CaseIterable, Identifiable {
         }
     }
 
+    var isNSFW: Bool {
+        self == .sexy
+    }
+
     var resourceName: String {
         switch self {
         case .slap:
@@ -47,10 +51,36 @@ enum SlapSound: String, CaseIterable, Identifiable {
             "exclamationmark.bubble.fill"
         }
     }
+
+    static func availableSounds(includeNSFW: Bool) -> [SlapSound] {
+        allCases.filter { includeNSFW || !$0.isNSFW }
+    }
+}
+
+struct CustomSlapSound: Identifiable, Hashable {
+    let id: String
+    let title: String
+}
+
+enum SoundPlayerError: LocalizedError {
+    case customDirectoryUnavailable
+    case unsupportedAudioFile
+
+    var errorDescription: String? {
+        switch self {
+        case .customDirectoryUnavailable:
+            "Custom sound storage is not available."
+        case .unsupportedAudioFile:
+            "Choose an audio file such as MP3, M4A, WAV, AIFF, or CAF."
+        }
+    }
 }
 
 final class SoundPlayer {
-    private var players: [SlapSound: AVAudioPlayer] = [:]
+    private static let supportedAudioExtensions = Set(["mp3", "m4a", "wav", "aif", "aiff", "caf"])
+
+    private var bundledPlayers: [SlapSound: AVAudioPlayer] = [:]
+    private var customPlayers: [URL: AVAudioPlayer] = [:]
 
     init() {
         for sound in SlapSound.allCases {
@@ -61,24 +91,92 @@ final class SoundPlayer {
             do {
                 let player = try AVAudioPlayer(contentsOf: url)
                 player.prepareToPlay()
-                players[sound] = player
+                bundledPlayers[sound] = player
             } catch {
-                players[sound] = nil
+                bundledPlayers[sound] = nil
             }
         }
     }
 
-    func isReady(for sound: SlapSound) -> Bool {
-        players[sound] != nil
+    func isReady(for sound: SlapSound, customSoundID: String?) -> Bool {
+        if let customSoundID, !customSoundID.isEmpty {
+            guard let customURL = customURL(for: sound, id: customSoundID) else {
+                return false
+            }
+
+            return FileManager.default.fileExists(atPath: customURL.path)
+        }
+
+        return bundledPlayers[sound] != nil
     }
 
-    func play(_ sound: SlapSound) {
-        guard let player = players[sound] else {
+    func play(_ sound: SlapSound, customSoundID: String? = nil) {
+        if let customSoundID,
+           !customSoundID.isEmpty,
+           let customURL = customURL(for: sound, id: customSoundID),
+           playCustomSound(at: customURL) {
+            return
+        }
+
+        guard let player = bundledPlayers[sound] else {
             return
         }
 
         player.currentTime = 0
         player.play()
+    }
+
+    func customSounds(for sound: SlapSound) -> [CustomSlapSound] {
+        guard let directory = customDirectory(for: sound) else {
+            return []
+        }
+
+        let urls = (try? FileManager.default.contentsOfDirectory(
+            at: directory,
+            includingPropertiesForKeys: nil,
+            options: [.skipsHiddenFiles]
+        )) ?? []
+
+        return urls
+            .filter { Self.supportedAudioExtensions.contains($0.pathExtension.lowercased()) }
+            .sorted { $0.lastPathComponent.localizedStandardCompare($1.lastPathComponent) == .orderedAscending }
+            .map { CustomSlapSound(id: $0.lastPathComponent, title: $0.deletingPathExtension().lastPathComponent) }
+    }
+
+    func importCustomSound(from sourceURL: URL, for sound: SlapSound) throws -> CustomSlapSound {
+        guard Self.supportedAudioExtensions.contains(sourceURL.pathExtension.lowercased()) else {
+            throw SoundPlayerError.unsupportedAudioFile
+        }
+
+        guard let directory = customDirectory(for: sound) else {
+            throw SoundPlayerError.customDirectoryUnavailable
+        }
+
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+
+        let didAccess = sourceURL.startAccessingSecurityScopedResource()
+        defer {
+            if didAccess {
+                sourceURL.stopAccessingSecurityScopedResource()
+            }
+        }
+
+        let destinationURL = uniqueDestinationURL(for: sourceURL, in: directory)
+        try FileManager.default.copyItem(at: sourceURL, to: destinationURL)
+
+        customPlayers[destinationURL] = nil
+        return CustomSlapSound(
+            id: destinationURL.lastPathComponent,
+            title: destinationURL.deletingPathExtension().lastPathComponent
+        )
+    }
+
+    func customSoundExists(for sound: SlapSound, id: String) -> Bool {
+        guard let url = customURL(for: sound, id: id) else {
+            return false
+        }
+
+        return FileManager.default.fileExists(atPath: url.path)
     }
 
     private static func resourceURL(for sound: SlapSound) -> URL? {
@@ -89,5 +187,70 @@ final class SoundPlayer {
         #endif
 
         return Bundle.main.url(forResource: sound.resourceName, withExtension: "mp3")
+    }
+
+    private func playCustomSound(at url: URL) -> Bool {
+        do {
+            let player: AVAudioPlayer
+            if let cachedPlayer = customPlayers[url] {
+                player = cachedPlayer
+            } else {
+                let newPlayer = try AVAudioPlayer(contentsOf: url)
+                newPlayer.prepareToPlay()
+                customPlayers[url] = newPlayer
+                player = newPlayer
+            }
+
+            player.currentTime = 0
+            player.play()
+            return true
+        } catch {
+            customPlayers[url] = nil
+            return false
+        }
+    }
+
+    private func customURL(for sound: SlapSound, id: String) -> URL? {
+        customDirectory(for: sound)?.appendingPathComponent(id)
+    }
+
+    private func customDirectory(for sound: SlapSound) -> URL? {
+        guard let applicationSupportURL = FileManager.default.urls(
+            for: .applicationSupportDirectory,
+            in: .userDomainMask
+        ).first else {
+            return nil
+        }
+
+        return applicationSupportURL
+            .appendingPathComponent("SlamDih", isDirectory: true)
+            .appendingPathComponent("CustomSounds", isDirectory: true)
+            .appendingPathComponent(sound.rawValue, isDirectory: true)
+    }
+
+    private func uniqueDestinationURL(for sourceURL: URL, in directory: URL) -> URL {
+        let sanitizedName = sanitizedFileName(from: sourceURL)
+        let baseName = (sanitizedName as NSString).deletingPathExtension
+        let fileExtension = (sanitizedName as NSString).pathExtension
+        var destinationURL = directory.appendingPathComponent(sanitizedName)
+        var suffix = 2
+
+        while FileManager.default.fileExists(atPath: destinationURL.path) {
+            destinationURL = directory.appendingPathComponent("\(baseName)-\(suffix).\(fileExtension)")
+            suffix += 1
+        }
+
+        return destinationURL
+    }
+
+    private func sanitizedFileName(from url: URL) -> String {
+        let fallbackName = "CustomSound.\(url.pathExtension.lowercased())"
+        let candidate = url.lastPathComponent.isEmpty ? fallbackName : url.lastPathComponent
+        let allowedCharacters = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: " ._-"))
+        let sanitized = String(candidate.unicodeScalars.map { scalar in
+            allowedCharacters.contains(scalar) ? Character(scalar) : "-"
+        })
+
+        return sanitized.isEmpty ? fallbackName : sanitized
     }
 }

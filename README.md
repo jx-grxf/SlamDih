@@ -130,7 +130,8 @@ open SlamDih.xcodeproj
 
 - Start monitoring from the toolbar, menu bar extra, or `Command-R`.
 - Use the threshold slider to tune detection.
-- Choose `Slap`, `Fart`, `Sexy`, or `Yowch` in the sound picker.
+- Choose `Slap`, `Fart`, or `Yowch` in the sound picker; enable NSFW sounds in Settings to unlock `Sexy`.
+- Add custom audio files from Settings with the plus button next to each sound, then pick the preferred file from that sound's dropdown.
 - Use the speaker button or `Command-T` to test the selected sound.
 - Use the reset button or `Command-0` to clear the counter.
 

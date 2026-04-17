@@ -193,7 +193,7 @@ struct ControlPanel: View {
                     .symbolRenderingMode(.hierarchical)
 
                 Picker("Sound", selection: $monitor.selectedSound) {
-                    ForEach(SlapSound.allCases) { sound in
+                    ForEach(monitor.availableSounds) { sound in
                         Label(sound.title, systemImage: sound.symbol)
                             .tag(sound)
                     }
