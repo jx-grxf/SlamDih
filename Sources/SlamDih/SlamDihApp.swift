@@ -14,9 +14,9 @@ struct SlamDihApp: App {
                     .frame(minWidth: 920, minHeight: 620)
             } else {
                 OnboardingView(monitor: monitor) {
-                    hasCompletedOnboarding = true
+                    finishOnboarding()
                 }
-                .frame(width: 460, height: 520)
+                .frame(minWidth: 920, minHeight: 620)
             }
         }
         .windowStyle(.hiddenTitleBar)
@@ -62,6 +62,11 @@ struct SlamDihApp: App {
             openWindow(id: "main")
         }
 
+        NSApp.activate(ignoringOtherApps: true)
+    }
+
+    private func finishOnboarding() {
+        hasCompletedOnboarding = true
         NSApp.activate(ignoringOtherApps: true)
     }
 }

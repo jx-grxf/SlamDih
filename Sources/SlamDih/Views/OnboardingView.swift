@@ -9,70 +9,56 @@ struct OnboardingView: View {
     @State private var scannerPulse = false
 
     var body: some View {
-        VStack(spacing: 24) {
-            Spacer(minLength: 12)
+        ZStack {
+            OnboardingBackground()
 
-            SensorScannerView(
-                availability: monitor.sensorAvailability,
-                rotation: scannerRotation,
-                isPulsing: scannerPulse
-            )
+            VStack(alignment: .leading, spacing: 0) {
+                header
 
-            VStack(spacing: 8) {
-                Text(monitor.sensorAvailability.title)
-                    .font(.system(size: 28, weight: .bold, design: .rounded))
-                    .multilineTextAlignment(.center)
+                Spacer(minLength: 28)
 
-                Text(description)
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(3)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-            .padding(.horizontal, 30)
+                HStack(alignment: .center, spacing: 56) {
+                    VStack(alignment: .leading, spacing: 24) {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("SlamDih")
+                                .font(.system(size: 18, weight: .bold, design: .rounded))
+                                .foregroundStyle(.mint)
 
-            VStack(spacing: 10) {
-                Button {
-                    startApp()
-                } label: {
-                    Label("Start using SlamDih", systemImage: "arrow.right.circle.fill")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
-                .tint(.mint)
-                .disabled(!monitor.sensorAvailability.canMonitor)
+                            Text(monitor.sensorAvailability.title)
+                                .font(.system(size: 52, weight: .bold, design: .rounded))
+                                .lineLimit(2)
+                                .minimumScaleFactor(0.78)
 
-                Button {
-                    Task {
-                        await monitor.checkSensorAvailability()
+                            Text(description)
+                                .font(.title3.weight(.medium))
+                                .foregroundStyle(.white.opacity(0.68))
+                                .lineSpacing(3)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
+                        .frame(maxWidth: 500, alignment: .leading)
+
+                        actionRow
                     }
-                } label: {
-                    Label("Check Again", systemImage: "arrow.clockwise")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.bordered)
-                .controlSize(.large)
-                .disabled(monitor.sensorAvailability == .checking)
-            }
-            .padding(.horizontal, 42)
 
-            Spacer(minLength: 10)
+                    Spacer(minLength: 12)
+
+                    SensorScannerView(
+                        availability: monitor.sensorAvailability,
+                        rotation: scannerRotation,
+                        isPulsing: scannerPulse
+                    )
+                }
+
+                Spacer(minLength: 30)
+
+                diagnosticsRow
+            }
+            .padding(.horizontal, 48)
+            .padding(.top, 38)
+            .padding(.bottom, 34)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .foregroundStyle(.white)
-        .background {
-            LinearGradient(
-                colors: [
-                    Color(red: 0.05, green: 0.06, blue: 0.07),
-                    Color(red: 0.08, green: 0.12, blue: 0.11),
-                    Color(red: 0.12, green: 0.09, blue: 0.08)
-                ],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
-        }
         .task {
             guard !didStartCheck else {
                 return
@@ -89,6 +75,71 @@ struct OnboardingView: View {
         }
     }
 
+    private var header: some View {
+        HStack {
+            Label("SlamDih", systemImage: "hand.raised.fill")
+                .font(.headline.weight(.bold))
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(.white)
+
+            Spacer()
+
+            SensorHealthBadge(availability: monitor.sensorAvailability)
+        }
+    }
+
+    private var actionRow: some View {
+        HStack(spacing: 12) {
+            Button {
+                startApp()
+            } label: {
+                Label("Start using SlamDih", systemImage: "arrow.right.circle.fill")
+                    .frame(width: 230)
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+            .tint(.mint)
+            .disabled(!monitor.sensorAvailability.canMonitor)
+
+            Button {
+                Task {
+                    await monitor.checkSensorAvailability()
+                }
+            } label: {
+                Label("Check Again", systemImage: "arrow.clockwise")
+                    .frame(width: 144)
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.large)
+            .disabled(monitor.sensorAvailability == .checking)
+        }
+    }
+
+    private var diagnosticsRow: some View {
+        HStack(spacing: 12) {
+            OnboardingStatusItem(
+                title: "Sensor",
+                value: monitor.sensorStatusTitle,
+                symbol: monitor.sensorAvailability.systemImage,
+                tint: sensorTint
+            )
+
+            OnboardingStatusItem(
+                title: "Audio",
+                value: monitor.soundStatus,
+                symbol: monitor.selectedSound.symbol,
+                tint: .orange
+            )
+
+            OnboardingStatusItem(
+                title: "Engine",
+                value: "Local HID",
+                symbol: "memorychip",
+                tint: .cyan
+            )
+        }
+    }
+
     private var description: String {
         switch monitor.sensorAvailability {
         case .checking:
@@ -97,6 +148,17 @@ struct OnboardingView: View {
             "Everything needed for live slap detection is available on this Mac."
         case .unsupported:
             "SlamDih needs a MacBook with an Apple SPU accelerometer. This Mac cannot run live monitoring."
+        }
+    }
+
+    private var sensorTint: Color {
+        switch monitor.sensorAvailability {
+        case .checking:
+            .cyan
+        case .detected:
+            .mint
+        case .unsupported:
+            .orange
         }
     }
 }
@@ -110,7 +172,7 @@ private struct SensorScannerView: View {
         ZStack {
             Circle()
                 .fill(.ultraThinMaterial)
-                .frame(width: 148, height: 148)
+                .frame(width: 236, height: 236)
                 .overlay {
                     Circle()
                         .stroke(.white.opacity(0.14), lineWidth: 1)
@@ -118,23 +180,23 @@ private struct SensorScannerView: View {
 
             Circle()
                 .trim(from: 0.08, to: 0.72)
-                .stroke(scannerTint.gradient, style: StrokeStyle(lineWidth: 5, lineCap: .round))
-                .frame(width: 170, height: 170)
+                .stroke(scannerTint.gradient, style: StrokeStyle(lineWidth: 7, lineCap: .round))
+                .frame(width: 282, height: 282)
                 .rotationEffect(.degrees(availability == .checking ? rotation : 0))
                 .opacity(availability == .checking ? 1 : 0.52)
 
             Circle()
-                .stroke(scannerTint.opacity(0.2), lineWidth: 16)
-                .frame(width: isPulsing ? 186 : 154, height: isPulsing ? 186 : 154)
+                .stroke(scannerTint.opacity(0.2), lineWidth: 22)
+                .frame(width: isPulsing ? 314 : 244, height: isPulsing ? 314 : 244)
                 .opacity(availability == .checking ? 0.8 : 0)
                 .animation(.easeInOut(duration: 1.1).repeatForever(autoreverses: true), value: isPulsing)
 
             Image(systemName: availability.systemImage)
-                .font(.system(size: 54, weight: .semibold))
+                .font(.system(size: 76, weight: .semibold))
                 .symbolRenderingMode(.hierarchical)
                 .foregroundStyle(scannerTint)
         }
-        .frame(width: 210, height: 210)
+        .frame(width: 330, height: 330)
         .accessibilityLabel(availability.title)
     }
 
@@ -147,5 +209,56 @@ private struct SensorScannerView: View {
         case .unsupported:
             .orange
         }
+    }
+}
+
+private struct OnboardingStatusItem: View {
+    let title: String
+    let value: String
+    let symbol: String
+    let tint: Color
+
+    var body: some View {
+        HStack(spacing: 10) {
+            Image(systemName: symbol)
+                .font(.title3)
+                .symbolRenderingMode(.hierarchical)
+                .foregroundStyle(tint)
+                .frame(width: 24)
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text(title)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.48))
+                Text(value)
+                    .font(.callout.weight(.semibold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.72)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 14)
+        .frame(maxWidth: .infinity, minHeight: 70, alignment: .leading)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(.white.opacity(0.09), lineWidth: 1)
+        }
+    }
+}
+
+private struct OnboardingBackground: View {
+    var body: some View {
+        LinearGradient(
+            colors: [
+                Color(red: 0.04, green: 0.05, blue: 0.06),
+                Color(red: 0.07, green: 0.11, blue: 0.10),
+                Color(red: 0.15, green: 0.10, blue: 0.08)
+            ],
+            startPoint: .topLeading,
+            endPoint: .bottomTrailing
+        )
+        .ignoresSafeArea()
     }
 }
