@@ -83,14 +83,14 @@ final class SlapMonitor {
             userDefaults.set(isNSFWSoundsEnabled, forKey: PreferenceKey.nsfwSoundsEnabled)
 
             if !isNSFWSoundsEnabled && selectedSound.isNSFW {
-                selectedSound = .slap
+                selectedSound = .whip
             }
         }
     }
-    var selectedSound: SlapSound = .slap {
+    var selectedSound: SlapSound = .whip {
         didSet {
             if selectedSound.isNSFW && !isNSFWSoundsEnabled {
-                selectedSound = oldValue.isNSFW ? .slap : oldValue
+                selectedSound = oldValue.isNSFW ? .whip : oldValue
                 return
             }
 
