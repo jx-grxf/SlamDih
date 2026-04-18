@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "A10000000000000000000001"
-               BuildableName = "SlamDih.app"
-               BlueprintName = "SlamDih"
-               ReferencedContainer = "container:SlamDih.xcodeproj">
+               BuildableName = "SlamX.app"
+               BlueprintName = "SlamX"
+               ReferencedContainer = "container:SlamX.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -46,9 +46,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "A10000000000000000000001"
-            BuildableName = "SlamDih.app"
-            BlueprintName = "SlamDih"
-            ReferencedContainer = "container:SlamDih.xcodeproj">
+            BuildableName = "SlamX.app"
+            BlueprintName = "SlamX"
+            ReferencedContainer = "container:SlamX.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -63,9 +63,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "A10000000000000000000001"
-            BuildableName = "SlamDih.app"
-            BlueprintName = "SlamDih"
-            ReferencedContainer = "container:SlamDih.xcodeproj">
+            BuildableName = "SlamX.app"
+            BlueprintName = "SlamX"
+            ReferencedContainer = "container:SlamX.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

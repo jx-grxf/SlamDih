@@ -1,7 +1,7 @@
 import Foundation
 import IOKit
 import IOKit.hid
-import SlamDihCore
+import SlamXCore
 
 enum MotionSensorError: LocalizedError {
     case deviceNotFound
@@ -23,7 +23,7 @@ final class MacBookMotionSensor {
     private let reportBuffer: UnsafeMutablePointer<UInt8>
     private let reportLength: Int
     private let callbackQueue = DispatchQueue(
-        label: "com.johannesgrof.slamdih.motion-sensor",
+        label: "com.johannesgrof.slamx.motion-sensor",
         qos: .userInteractive
     )
     private var device: IOHIDDevice?

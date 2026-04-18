@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>SlamDih</string>
+	<string>SlamX</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -31,7 +31,7 @@
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
 	<key>SUFeedURL</key>
-	<string>https://github.com/jx-grxf/SlamDih/releases/latest/download/appcast.xml</string>
+	<string>https://github.com/jx-grxf/SlamX/releases/latest/download/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>5C07+9d6MWbYcFXs5bgGWA3E7gjkQvSrNIT8yMHXj7U=</string>
 </dict>

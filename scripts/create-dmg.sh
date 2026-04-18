@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-APP_NAME="SlamDih"
+APP_NAME="SlamX"
 VERSION="${1:-0.2.0}"
 BUILD_NUMBER="${2:-${BUILD_NUMBER:-2}}"
 BUILD_ROOT="$ROOT_DIR/.build/xcode-release"

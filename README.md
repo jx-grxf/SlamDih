@@ -1,21 +1,21 @@
 <div align="center">
 
-# SlamDih
+# SlamX
 
 **A native macOS utility that turns MacBook motion impacts into local sound feedback.**
 
-![Release](https://img.shields.io/github/v/release/jx-grxf/SlamDih?label=release)
+![Release](https://img.shields.io/github/v/release/jx-grxf/SlamX?label=release)
 ![Status](https://img.shields.io/badge/status-experimental-f59e0b)
 ![Swift](https://img.shields.io/badge/Swift-6.3-F05138?logo=swift&logoColor=white)
 ![SwiftUI](https://img.shields.io/badge/SwiftUI-native%20macOS-0A84FF)
 ![IOKit](https://img.shields.io/badge/IOKit-HID%20sensor%20stream-2D3748)
 ![Platform](https://img.shields.io/badge/platform-macOS%2014+-111827)
 ![License](https://img.shields.io/badge/license-MIT-green)
-[![CI status](https://github.com/jx-grxf/SlamDih/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/jx-grxf/SlamDih/actions/workflows/ci.yml)
+[![CI status](https://github.com/jx-grxf/SlamX/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/jx-grxf/SlamX/actions/workflows/ci.yml)
 
 </div>
 
-SlamDih is a small experimental MacBook utility that listens to the built-in Apple SPU accelerometer, detects sharp impact spikes, increments a counter, and plays local sound feedback.
+SlamX is a small experimental MacBook utility that listens to the built-in Apple SPU accelerometer, detects sharp impact spikes, increments a counter, and plays local sound feedback.
 
 It is built as a local-first macOS project: motion samples stay on the Mac, no microphone path exists, and live detection is only available on supported MacBooks.
 
@@ -24,18 +24,18 @@ It is built as a local-first macOS project: motion samples stay on the Mac, no m
 ## Showcase
 
 <p align="center">
-  <img src="docs/showcase/slamdih-showcase.svg" alt="SlamDih showcase" width="860">
+  <img src="docs/showcase/slamx-showcase.svg" alt="SlamX showcase" width="860">
 </p>
 
 <p align="center">
-  <img src="docs/showcase/monitor-slamdih.jpeg" alt="SlamDih monitor screen" width="860">
+  <img src="docs/showcase/monitor-slamx.jpeg" alt="SlamX monitor screen" width="860">
 </p>
 
 ---
 
 ## Contents
 
-- [SlamDih](#slamdih)
+- [SlamX](#slamx)
 - [Showcase](#showcase)
 - [Highlights](#highlights)
 - [Compatibility](#compatibility)
@@ -81,7 +81,7 @@ It is built as a local-first macOS project: motion samples stay on the Mac, no m
 
 MacBooks have internal motion hardware, but Apple does not expose a clean public Core Motion API for MacBook accelerometer data. The practical route for this experiment is the HID stream exposed by `AppleSPUHIDDevice`.
 
-SlamDih wraps that low-level stream in a tiny native app with visible telemetry so calibration is not guesswork.
+SlamX wraps that low-level stream in a tiny native app with visible telemetry so calibration is not guesswork.
 
 ---
 
@@ -92,9 +92,9 @@ SlamDih wraps that low-level stream in a tiny native app with visible telemetry 
 3. Watch live sensor values and impact intensity.
 4. Adjust the threshold until normal desk movement is ignored.
 5. Apply a light tap to produce a clear motion spike.
-6. SlamDih plays the sound and increments the counter.
+6. SlamX plays the sound and increments the counter.
 
-If no accessible Apple SPU accelerometer is found during onboarding, SlamDih explains that the Mac is unsupported. SlamDih is sensor-only: either the accelerometer is available, or live detection is unavailable on that Mac.
+If no accessible Apple SPU accelerometer is found during onboarding, SlamX explains that the Mac is unsupported. SlamX is sensor-only: either the accelerometer is available, or live detection is unavailable on that Mac.
 
 ---
 
@@ -124,14 +124,14 @@ If no accessible Apple SPU accelerometer is found during onboarding, SlamDih exp
 
 ```bash
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift test
-DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift run SlamDih
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift run SlamX
 ```
 
 Build a local release app:
 
 ```bash
 ./scripts/package-app.sh 0.2.1 3
-open .build/xcode-release/Release/SlamDih.app
+open .build/xcode-release/Release/SlamX.app
 ```
 
 Create a local Sparkle-ready DMG and appcast:
@@ -144,7 +144,7 @@ Create a local Sparkle-ready DMG and appcast:
 Open the native Xcode project for app icon editing, signing, archives, and normal macOS app work:
 
 ```bash
-open SlamDih.xcodeproj
+open SlamX.xcodeproj
 ```
 
 ---
@@ -164,7 +164,7 @@ open SlamDih.xcodeproj
 
 ## Privacy
 
-- SlamDih reads local Apple SPU accelerometer reports through IOKit.
+- SlamX reads local Apple SPU accelerometer reports through IOKit.
 - Motion samples, raw HID bytes, counters, thresholds, and selected sounds are not uploaded.
 - Sparkle update checks contact the public update feed configured in `Resources/Info.plist`.
 - Custom MP3 files are copied into the app's local support storage only after the user chooses them.
@@ -173,7 +173,7 @@ open SlamDih.xcodeproj
 
 ## Release Status
 
-SlamDih is public-source friendly, but the default release scripts currently create local test builds unless a Developer ID identity is supplied.
+SlamX is public-source friendly, but the default release scripts currently create local test builds unless a Developer ID identity is supplied.
 
 | Release concern | Current status |
 |---|---|
@@ -199,7 +199,7 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift test
 Run the app in debug mode:
 
 ```bash
-DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift run SlamDih
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift run SlamX
 ```
 
 Package the app through the Xcode project:
@@ -217,7 +217,7 @@ Build the release DMG:
 Build through Xcode:
 
 ```bash
-DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project SlamDih.xcodeproj -scheme SlamDih -configuration Debug -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project SlamX.xcodeproj -scheme SlamX -configuration Debug -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build
 ```
 
 ---

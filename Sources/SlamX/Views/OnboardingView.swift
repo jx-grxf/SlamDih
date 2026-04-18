@@ -28,7 +28,7 @@ struct OnboardingView: View {
                 HStack(alignment: .center, spacing: 56) {
                     VStack(alignment: .leading, spacing: 24) {
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("SlamDih")
+                            Text("SlamX")
                                 .font(.system(size: 18, weight: .bold, design: .rounded))
                                 .foregroundStyle(.mint)
 
@@ -91,7 +91,7 @@ struct OnboardingView: View {
         .alert("Unsupported-device test mode", isPresented: $showsUnsupportedTestModeNotice) {
             Button("OK", role: .cancel) { }
         } message: {
-            Text("SlamDih is now simulating a Mac without the Apple SPU accelerometer. This is only for testing the unsupported-device flow; it does not mean this Mac is actually unsupported.")
+            Text("SlamX is now simulating a Mac without the Apple SPU accelerometer. This is only for testing the unsupported-device flow; it does not mean this Mac is actually unsupported.")
         }
         .sheet(isPresented: $isShowingCalibration) {
             CalibrationView(monitor: monitor) {
@@ -113,7 +113,7 @@ struct OnboardingView: View {
 
     private var header: some View {
         HStack {
-            Label("SlamDih", systemImage: "hand.raised.fill")
+            Label("SlamX", systemImage: "hand.raised.fill")
                 .font(.headline.weight(.bold))
                 .symbolRenderingMode(.hierarchical)
                 .foregroundStyle(.white)
@@ -157,7 +157,7 @@ struct OnboardingView: View {
                         finishOnboarding()
                         startApp()
                     } label: {
-                        Label("Start using SlamDih", systemImage: "arrow.right.circle.fill")
+                        Label("Start using SlamX", systemImage: "arrow.right.circle.fill")
                             .frame(width: 230)
                     }
                     .buttonStyle(.borderedProminent)
@@ -214,7 +214,7 @@ struct OnboardingView: View {
     private var description: String {
         switch monitor.sensorAvailability {
         case .checking:
-            return "SlamDih is checking whether this Mac exposes the Apple SPU motion sensor."
+            return "SlamX is checking whether this Mac exposes the Apple SPU motion sensor."
         case .detected where hasCompletedSoundTest && hasCompletedCalibration:
             return "Detection is verified and the beta calibration has tuned the trigger threshold."
         case .detected where hasCompletedSoundTest:
@@ -222,9 +222,9 @@ struct OnboardingView: View {
         case .detected where isSoundTestActive:
             return "Apply one light tap to verify that the sensor can detect a clear impact."
         case .detected:
-            return "The motion sensor is available. SlamDih will run one quick local detection check."
+            return "The motion sensor is available. SlamX will run one quick local detection check."
         case .unsupported:
-            return "\(monitor.unsupportedSensorExplanation) You can check again after moving to a supported MacBook or quit SlamDih safely."
+            return "\(monitor.unsupportedSensorExplanation) You can check again after moving to a supported MacBook or quit SlamX safely."
         }
     }
 

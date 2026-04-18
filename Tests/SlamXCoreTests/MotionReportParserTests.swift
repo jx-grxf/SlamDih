@@ -1,5 +1,5 @@
 import XCTest
-@testable import SlamDihCore
+@testable import SlamXCore
 
 final class MotionReportParserTests: XCTestCase {
     func testParsesAppleSPUFixedPointAcceleration() throws {

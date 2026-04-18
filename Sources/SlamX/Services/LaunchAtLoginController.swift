@@ -38,9 +38,9 @@ final class LaunchAtLoginController {
     private static func description(for status: SMAppService.Status) -> String {
         switch status {
         case .enabled:
-            "SlamDih starts automatically when you sign in."
+            "SlamX starts automatically when you sign in."
         case .requiresApproval:
-            "macOS needs approval in Login Items before SlamDih can start automatically."
+            "macOS needs approval in Login Items before SlamX can start automatically."
         case .notRegistered:
             "Launch at login is off."
         case .notFound:

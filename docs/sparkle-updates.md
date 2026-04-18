@@ -1,6 +1,6 @@
 # Sparkle Updates
 
-SlamDih uses Sparkle 2 for in-app updates.
+SlamX uses Sparkle 2 for in-app updates.
 
 ## Important
 
@@ -42,21 +42,21 @@ Optional but recommended: add release notes next to the DMG before generating th
 The filename must match the DMG basename:
 
 ```text
-.build/dmg/SlamDih-0.2.0.md
+.build/dmg/SlamX-0.2.0.md
 ```
 
 These notes are embedded into `appcast.xml`, so Sparkle can show the changelog in its update window without another release asset.
 
 Upload these release assets:
 
-- `.build/dmg/SlamDih-0.2.0.dmg`
-- `.build/dmg/SlamDih-0.2.0.dmg.sha256`
+- `.build/dmg/SlamX-0.2.0.dmg`
+- `.build/dmg/SlamX-0.2.0.dmg.sha256`
 - `.build/dmg/appcast.xml`
 
 The app checks this feed:
 
 ```text
-https://github.com/jx-grxf/SlamDih/releases/latest/download/appcast.xml
+https://github.com/jx-grxf/SlamX/releases/latest/download/appcast.xml
 ```
 
 For a paid/private-source future, the source repository can remain private, but the appcast and binary asset still need to be public or otherwise reachable without GitHub authentication.
@@ -83,7 +83,7 @@ For example, if the installed local app is `0.2.0` build `2`, publish the test u
 To force an immediate check during local testing:
 
 ```bash
-defaults delete com.johannesgrof.slamdih SULastCheckTime
+defaults delete com.johannesgrof.slamx SULastCheckTime
 ```
 
-Then launch the app and use `SlamDih > Check for Updates...`.
+Then launch the app and use `SlamX > Check for Updates...`.

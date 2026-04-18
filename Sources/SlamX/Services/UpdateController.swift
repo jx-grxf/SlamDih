@@ -18,7 +18,7 @@ final class UpdateController {
         init(item: SUAppcastItem) {
             displayVersion = item.displayVersionString
             buildVersion = item.versionString
-            title = item.title ?? "SlamDih \(item.displayVersionString)"
+            title = item.title ?? "SlamX \(item.displayVersionString)"
         }
     }
 

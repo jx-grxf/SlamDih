@@ -7,33 +7,33 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B10000000000000000000001 /* Sources/SlamDih/SlamDihApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000001 /* Sources/SlamDih/SlamDihApp.swift */; };
-		B10000000000000000000002 /* Sources/SlamDih/Services/MacBookMotionSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000002 /* Sources/SlamDih/Services/MacBookMotionSensor.swift */; };
-		B10000000000000000000003 /* Sources/SlamDih/Services/SoundPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000003 /* Sources/SlamDih/Services/SoundPlayer.swift */; };
-		B10000000000000000000004 /* Sources/SlamDih/ViewModels/SlapMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000004 /* Sources/SlamDih/ViewModels/SlapMonitor.swift */; };
-		B10000000000000000000005 /* Sources/SlamDih/Views/AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000005 /* Sources/SlamDih/Views/AboutView.swift */; };
-		B10000000000000000000006 /* Sources/SlamDih/Views/CalibrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000006 /* Sources/SlamDih/Views/CalibrationView.swift */; };
-		B10000000000000000000007 /* Sources/SlamDih/Views/ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000007 /* Sources/SlamDih/Views/ContentView.swift */; };
-		B10000000000000000000008 /* Sources/SlamDih/Views/MonitorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000008 /* Sources/SlamDih/Views/MonitorView.swift */; };
-		B10000000000000000000009 /* Sources/SlamDih/Views/SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000009 /* Sources/SlamDih/Views/SettingsView.swift */; };
-		B1000000000000000000000A /* Sources/SlamDihCore/MotionReportParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1000000000000000000000A /* Sources/SlamDihCore/MotionReportParser.swift */; };
-		B1000000000000000000000B /* Sources/SlamDihCore/MotionSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1000000000000000000000B /* Sources/SlamDihCore/MotionSample.swift */; };
-		B1000000000000000000000C /* Sources/SlamDihCore/SlapDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1000000000000000000000C /* Sources/SlamDihCore/SlapDetector.swift */; };
-		B1000000000000000000000D /* Sources/SlamDih/Resources/ImpactSoundEffect.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F1000000000000000000000D /* Sources/SlamDih/Resources/ImpactSoundEffect.mp3 */; };
-		B1000000000000000000000E /* Sources/SlamDih/Resources/AirPopSoundEffect.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F1000000000000000000000E /* Sources/SlamDih/Resources/AirPopSoundEffect.mp3 */; };
+		B10000000000000000000001 /* Sources/SlamX/SlamXApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000001 /* Sources/SlamX/SlamXApp.swift */; };
+		B10000000000000000000002 /* Sources/SlamX/Services/MacBookMotionSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000002 /* Sources/SlamX/Services/MacBookMotionSensor.swift */; };
+		B10000000000000000000003 /* Sources/SlamX/Services/SoundPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000003 /* Sources/SlamX/Services/SoundPlayer.swift */; };
+		B10000000000000000000004 /* Sources/SlamX/ViewModels/SlapMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000004 /* Sources/SlamX/ViewModels/SlapMonitor.swift */; };
+		B10000000000000000000005 /* Sources/SlamX/Views/AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000005 /* Sources/SlamX/Views/AboutView.swift */; };
+		B10000000000000000000006 /* Sources/SlamX/Views/CalibrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000006 /* Sources/SlamX/Views/CalibrationView.swift */; };
+		B10000000000000000000007 /* Sources/SlamX/Views/ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000007 /* Sources/SlamX/Views/ContentView.swift */; };
+		B10000000000000000000008 /* Sources/SlamX/Views/MonitorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000008 /* Sources/SlamX/Views/MonitorView.swift */; };
+		B10000000000000000000009 /* Sources/SlamX/Views/SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000009 /* Sources/SlamX/Views/SettingsView.swift */; };
+		B1000000000000000000000A /* Sources/SlamXCore/MotionReportParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1000000000000000000000A /* Sources/SlamXCore/MotionReportParser.swift */; };
+		B1000000000000000000000B /* Sources/SlamXCore/MotionSample.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1000000000000000000000B /* Sources/SlamXCore/MotionSample.swift */; };
+		B1000000000000000000000C /* Sources/SlamXCore/SlapDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1000000000000000000000C /* Sources/SlamXCore/SlapDetector.swift */; };
+		B1000000000000000000000D /* Sources/SlamX/Resources/ImpactSoundEffect.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F1000000000000000000000D /* Sources/SlamX/Resources/ImpactSoundEffect.mp3 */; };
+		B1000000000000000000000E /* Sources/SlamX/Resources/AirPopSoundEffect.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F1000000000000000000000E /* Sources/SlamX/Resources/AirPopSoundEffect.mp3 */; };
 		B1000000000000000000000F /* Resources/Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F1000000000000000000000F /* Resources/Assets.xcassets */; };
-		B10000000000000000000010 /* libSlamDihCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* libSlamDihCore.a */; };
+		B10000000000000000000010 /* libSlamXCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* libSlamXCore.a */; };
 		B10000000000000000000011 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F10000000000000000000013 /* AppKit.framework */; };
 		B10000000000000000000012 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F10000000000000000000014 /* AVFoundation.framework */; };
 		B10000000000000000000013 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F10000000000000000000015 /* IOKit.framework */; };
-		B10000000000000000000014 /* Sources/SlamDih/Views/OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000016 /* Sources/SlamDih/Views/OnboardingView.swift */; };
-		B10000000000000000000015 /* Sources/SlamDih/Resources/SpotlightSoundEffect.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000017 /* Sources/SlamDih/Resources/SpotlightSoundEffect.mp3 */; };
-		B10000000000000000000016 /* Sources/SlamDih/Services/UpdateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000018 /* Sources/SlamDih/Services/UpdateController.swift */; };
+		B10000000000000000000014 /* Sources/SlamX/Views/OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000016 /* Sources/SlamX/Views/OnboardingView.swift */; };
+		B10000000000000000000015 /* Sources/SlamX/Resources/SpotlightSoundEffect.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000017 /* Sources/SlamX/Resources/SpotlightSoundEffect.mp3 */; };
+		B10000000000000000000016 /* Sources/SlamX/Services/UpdateController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10000000000000000000018 /* Sources/SlamX/Services/UpdateController.swift */; };
 		B10000000000000000000017 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = A30000000000000000000002 /* Sparkle */; };
-		B10000000000000000000018 /* Sources/SlamDih/Resources/AlertSoundEffect.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F1000000000000000000001A /* Sources/SlamDih/Resources/AlertSoundEffect.mp3 */; };
-		B10000000000000000000019 /* Sources/SlamDih/Resources/SnapSoundEffect.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F1000000000000000000001B /* Sources/SlamDih/Resources/SnapSoundEffect.mp3 */; };
-		B1000000000000000000001B /* Sources/SlamDih/Services/GlobalHotKeyController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1000000000000000000001D /* Sources/SlamDih/Services/GlobalHotKeyController.swift */; };
-		B1000000000000000000001C /* Sources/SlamDih/Services/LaunchAtLoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1000000000000000000001E /* Sources/SlamDih/Services/LaunchAtLoginController.swift */; };
+		B10000000000000000000018 /* Sources/SlamX/Resources/AlertSoundEffect.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F1000000000000000000001A /* Sources/SlamX/Resources/AlertSoundEffect.mp3 */; };
+		B10000000000000000000019 /* Sources/SlamX/Resources/SnapSoundEffect.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = F1000000000000000000001B /* Sources/SlamX/Resources/SnapSoundEffect.mp3 */; };
+		B1000000000000000000001B /* Sources/SlamX/Services/GlobalHotKeyController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1000000000000000000001D /* Sources/SlamX/Services/GlobalHotKeyController.swift */; };
+		B1000000000000000000001C /* Sources/SlamX/Services/LaunchAtLoginController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1000000000000000000001E /* Sources/SlamX/Services/LaunchAtLoginController.swift */; };
 		B1000000000000000000001D /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F1000000000000000000001F /* Carbon.framework */; };
 		B1000000000000000000001E /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F10000000000000000000020 /* ServiceManagement.framework */; };
 /* End PBXBuildFile section */
@@ -44,27 +44,27 @@
 			containerPortal = A00000000000000000000001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = A10000000000000000000002;
-			remoteInfo = SlamDihCore;
+			remoteInfo = SlamXCore;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		A20000000000000000000001 /* SlamDih.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SlamDih.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		A20000000000000000000002 /* libSlamDihCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSlamDihCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		F10000000000000000000001 /* Sources/SlamDih/SlamDihApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamDih/SlamDihApp.swift; sourceTree = "<group>"; };
-		F10000000000000000000002 /* Sources/SlamDih/Services/MacBookMotionSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamDih/Services/MacBookMotionSensor.swift; sourceTree = "<group>"; };
-		F10000000000000000000003 /* Sources/SlamDih/Services/SoundPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamDih/Services/SoundPlayer.swift; sourceTree = "<group>"; };
-		F10000000000000000000004 /* Sources/SlamDih/ViewModels/SlapMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamDih/ViewModels/SlapMonitor.swift; sourceTree = "<group>"; };
-		F10000000000000000000005 /* Sources/SlamDih/Views/AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamDih/Views/AboutView.swift; sourceTree = "<group>"; };
-		F10000000000000000000006 /* Sources/SlamDih/Views/CalibrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamDih/Views/CalibrationView.swift; sourceTree = "<group>"; };
-		F10000000000000000000007 /* Sources/SlamDih/Views/ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamDih/Views/ContentView.swift; sourceTree = "<group>"; };
-		F10000000000000000000008 /* Sources/SlamDih/Views/MonitorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamDih/Views/MonitorView.swift; sourceTree = "<group>"; };
-		F10000000000000000000009 /* Sources/SlamDih/Views/SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamDih/Views/SettingsView.swift; sourceTree = "<group>"; };
-		F1000000000000000000000A /* Sources/SlamDihCore/MotionReportParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamDihCore/MotionReportParser.swift; sourceTree = "<group>"; };
-		F1000000000000000000000B /* Sources/SlamDihCore/MotionSample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamDihCore/MotionSample.swift; sourceTree = "<group>"; };
-		F1000000000000000000000C /* Sources/SlamDihCore/SlapDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamDihCore/SlapDetector.swift; sourceTree = "<group>"; };
-		F1000000000000000000000D /* Sources/SlamDih/Resources/ImpactSoundEffect.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Sources/SlamDih/Resources/ImpactSoundEffect.mp3; sourceTree = "<group>"; };
-		F1000000000000000000000E /* Sources/SlamDih/Resources/AirPopSoundEffect.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Sources/SlamDih/Resources/AirPopSoundEffect.mp3; sourceTree = "<group>"; };
+		A20000000000000000000001 /* SlamX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SlamX.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		A20000000000000000000002 /* libSlamXCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libSlamXCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		F10000000000000000000001 /* Sources/SlamX/SlamXApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamX/SlamXApp.swift; sourceTree = "<group>"; };
+		F10000000000000000000002 /* Sources/SlamX/Services/MacBookMotionSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamX/Services/MacBookMotionSensor.swift; sourceTree = "<group>"; };
+		F10000000000000000000003 /* Sources/SlamX/Services/SoundPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamX/Services/SoundPlayer.swift; sourceTree = "<group>"; };
+		F10000000000000000000004 /* Sources/SlamX/ViewModels/SlapMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamX/ViewModels/SlapMonitor.swift; sourceTree = "<group>"; };
+		F10000000000000000000005 /* Sources/SlamX/Views/AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamX/Views/AboutView.swift; sourceTree = "<group>"; };
+		F10000000000000000000006 /* Sources/SlamX/Views/CalibrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamX/Views/CalibrationView.swift; sourceTree = "<group>"; };
+		F10000000000000000000007 /* Sources/SlamX/Views/ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamX/Views/ContentView.swift; sourceTree = "<group>"; };
+		F10000000000000000000008 /* Sources/SlamX/Views/MonitorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamX/Views/MonitorView.swift; sourceTree = "<group>"; };
+		F10000000000000000000009 /* Sources/SlamX/Views/SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamX/Views/SettingsView.swift; sourceTree = "<group>"; };
+		F1000000000000000000000A /* Sources/SlamXCore/MotionReportParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamXCore/MotionReportParser.swift; sourceTree = "<group>"; };
+		F1000000000000000000000B /* Sources/SlamXCore/MotionSample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamXCore/MotionSample.swift; sourceTree = "<group>"; };
+		F1000000000000000000000C /* Sources/SlamXCore/SlapDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamXCore/SlapDetector.swift; sourceTree = "<group>"; };
+		F1000000000000000000000D /* Sources/SlamX/Resources/ImpactSoundEffect.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Sources/SlamX/Resources/ImpactSoundEffect.mp3; sourceTree = "<group>"; };
+		F1000000000000000000000E /* Sources/SlamX/Resources/AirPopSoundEffect.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Sources/SlamX/Resources/AirPopSoundEffect.mp3; sourceTree = "<group>"; };
 		F1000000000000000000000F /* Resources/Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Resources/Assets.xcassets; sourceTree = "<group>"; };
 		F10000000000000000000010 /* Package.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		F10000000000000000000011 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -72,14 +72,14 @@
 		F10000000000000000000013 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		F10000000000000000000014 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		F10000000000000000000015 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
-		F10000000000000000000016 /* Sources/SlamDih/Views/OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamDih/Views/OnboardingView.swift; sourceTree = "<group>"; };
-		F10000000000000000000017 /* Sources/SlamDih/Resources/SpotlightSoundEffect.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Sources/SlamDih/Resources/SpotlightSoundEffect.mp3; sourceTree = "<group>"; };
-		F10000000000000000000018 /* Sources/SlamDih/Services/UpdateController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamDih/Services/UpdateController.swift; sourceTree = "<group>"; };
+		F10000000000000000000016 /* Sources/SlamX/Views/OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamX/Views/OnboardingView.swift; sourceTree = "<group>"; };
+		F10000000000000000000017 /* Sources/SlamX/Resources/SpotlightSoundEffect.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Sources/SlamX/Resources/SpotlightSoundEffect.mp3; sourceTree = "<group>"; };
+		F10000000000000000000018 /* Sources/SlamX/Services/UpdateController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamX/Services/UpdateController.swift; sourceTree = "<group>"; };
 		F10000000000000000000019 /* Resources/Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Resources/Info.plist; sourceTree = "<group>"; };
-		F1000000000000000000001A /* Sources/SlamDih/Resources/AlertSoundEffect.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Sources/SlamDih/Resources/AlertSoundEffect.mp3; sourceTree = "<group>"; };
-		F1000000000000000000001B /* Sources/SlamDih/Resources/SnapSoundEffect.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Sources/SlamDih/Resources/SnapSoundEffect.mp3; sourceTree = "<group>"; };
-		F1000000000000000000001D /* Sources/SlamDih/Services/GlobalHotKeyController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamDih/Services/GlobalHotKeyController.swift; sourceTree = "<group>"; };
-		F1000000000000000000001E /* Sources/SlamDih/Services/LaunchAtLoginController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamDih/Services/LaunchAtLoginController.swift; sourceTree = "<group>"; };
+		F1000000000000000000001A /* Sources/SlamX/Resources/AlertSoundEffect.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Sources/SlamX/Resources/AlertSoundEffect.mp3; sourceTree = "<group>"; };
+		F1000000000000000000001B /* Sources/SlamX/Resources/SnapSoundEffect.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = Sources/SlamX/Resources/SnapSoundEffect.mp3; sourceTree = "<group>"; };
+		F1000000000000000000001D /* Sources/SlamX/Services/GlobalHotKeyController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamX/Services/GlobalHotKeyController.swift; sourceTree = "<group>"; };
+		F1000000000000000000001E /* Sources/SlamX/Services/LaunchAtLoginController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sources/SlamX/Services/LaunchAtLoginController.swift; sourceTree = "<group>"; };
 		F1000000000000000000001F /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
 		F10000000000000000000020 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -89,7 +89,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B10000000000000000000010 /* libSlamDihCore.a in Frameworks */,
+				B10000000000000000000010 /* libSlamXCore.a in Frameworks */,
 				B10000000000000000000011 /* AppKit.framework in Frameworks */,
 				B10000000000000000000012 /* AVFoundation.framework in Frameworks */,
 				B1000000000000000000001D /* Carbon.framework in Frameworks */,
@@ -118,8 +118,8 @@
 		A00000000000000000000003 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				A20000000000000000000001 /* SlamDih.app */,
-				A20000000000000000000002 /* libSlamDihCore.a */,
+				A20000000000000000000001 /* SlamX.app */,
+				A20000000000000000000002 /* libSlamXCore.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -127,31 +127,31 @@
 		A00000000000000000000004 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				A00000000000000000000005 /* SlamDih */,
-				A00000000000000000000009 /* SlamDihCore */,
+				A00000000000000000000005 /* SlamX */,
+				A00000000000000000000009 /* SlamXCore */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
 		};
-		A00000000000000000000005 /* SlamDih */ = {
+		A00000000000000000000005 /* SlamX */ = {
 			isa = PBXGroup;
 			children = (
-				F10000000000000000000001 /* Sources/SlamDih/SlamDihApp.swift */,
+				F10000000000000000000001 /* Sources/SlamX/SlamXApp.swift */,
 				A00000000000000000000006 /* Services */,
 				A00000000000000000000007 /* ViewModels */,
 				A00000000000000000000008 /* Views */,
 			);
-			name = SlamDih;
+			name = SlamX;
 			sourceTree = "<group>";
 		};
 		A00000000000000000000006 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				F10000000000000000000002 /* Sources/SlamDih/Services/MacBookMotionSensor.swift */,
-				F1000000000000000000001D /* Sources/SlamDih/Services/GlobalHotKeyController.swift */,
-				F1000000000000000000001E /* Sources/SlamDih/Services/LaunchAtLoginController.swift */,
-				F10000000000000000000003 /* Sources/SlamDih/Services/SoundPlayer.swift */,
-				F10000000000000000000018 /* Sources/SlamDih/Services/UpdateController.swift */,
+				F10000000000000000000002 /* Sources/SlamX/Services/MacBookMotionSensor.swift */,
+				F1000000000000000000001D /* Sources/SlamX/Services/GlobalHotKeyController.swift */,
+				F1000000000000000000001E /* Sources/SlamX/Services/LaunchAtLoginController.swift */,
+				F10000000000000000000003 /* Sources/SlamX/Services/SoundPlayer.swift */,
+				F10000000000000000000018 /* Sources/SlamX/Services/UpdateController.swift */,
 			);
 			name = Services;
 			sourceTree = "<group>";
@@ -159,7 +159,7 @@
 		A00000000000000000000007 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				F10000000000000000000004 /* Sources/SlamDih/ViewModels/SlapMonitor.swift */,
+				F10000000000000000000004 /* Sources/SlamX/ViewModels/SlapMonitor.swift */,
 			);
 			name = ViewModels;
 			sourceTree = "<group>";
@@ -167,35 +167,35 @@
 		A00000000000000000000008 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				F10000000000000000000005 /* Sources/SlamDih/Views/AboutView.swift */,
-				F10000000000000000000006 /* Sources/SlamDih/Views/CalibrationView.swift */,
-				F10000000000000000000007 /* Sources/SlamDih/Views/ContentView.swift */,
-				F10000000000000000000008 /* Sources/SlamDih/Views/MonitorView.swift */,
-				F10000000000000000000016 /* Sources/SlamDih/Views/OnboardingView.swift */,
-				F10000000000000000000009 /* Sources/SlamDih/Views/SettingsView.swift */,
+				F10000000000000000000005 /* Sources/SlamX/Views/AboutView.swift */,
+				F10000000000000000000006 /* Sources/SlamX/Views/CalibrationView.swift */,
+				F10000000000000000000007 /* Sources/SlamX/Views/ContentView.swift */,
+				F10000000000000000000008 /* Sources/SlamX/Views/MonitorView.swift */,
+				F10000000000000000000016 /* Sources/SlamX/Views/OnboardingView.swift */,
+				F10000000000000000000009 /* Sources/SlamX/Views/SettingsView.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
 		};
-		A00000000000000000000009 /* SlamDihCore */ = {
+		A00000000000000000000009 /* SlamXCore */ = {
 			isa = PBXGroup;
 			children = (
-				F1000000000000000000000A /* Sources/SlamDihCore/MotionReportParser.swift */,
-				F1000000000000000000000B /* Sources/SlamDihCore/MotionSample.swift */,
-				F1000000000000000000000C /* Sources/SlamDihCore/SlapDetector.swift */,
+				F1000000000000000000000A /* Sources/SlamXCore/MotionReportParser.swift */,
+				F1000000000000000000000B /* Sources/SlamXCore/MotionSample.swift */,
+				F1000000000000000000000C /* Sources/SlamXCore/SlapDetector.swift */,
 			);
-			name = SlamDihCore;
+			name = SlamXCore;
 			sourceTree = "<group>";
 		};
 		A0000000000000000000000A /* Resources */ = {
 			isa = PBXGroup;
 			children = (
 				F1000000000000000000000F /* Resources/Assets.xcassets */,
-				F1000000000000000000000D /* Sources/SlamDih/Resources/ImpactSoundEffect.mp3 */,
-				F1000000000000000000000E /* Sources/SlamDih/Resources/AirPopSoundEffect.mp3 */,
-				F10000000000000000000017 /* Sources/SlamDih/Resources/SpotlightSoundEffect.mp3 */,
-				F1000000000000000000001A /* Sources/SlamDih/Resources/AlertSoundEffect.mp3 */,
-				F1000000000000000000001B /* Sources/SlamDih/Resources/SnapSoundEffect.mp3 */,
+				F1000000000000000000000D /* Sources/SlamX/Resources/ImpactSoundEffect.mp3 */,
+				F1000000000000000000000E /* Sources/SlamX/Resources/AirPopSoundEffect.mp3 */,
+				F10000000000000000000017 /* Sources/SlamX/Resources/SpotlightSoundEffect.mp3 */,
+				F1000000000000000000001A /* Sources/SlamX/Resources/AlertSoundEffect.mp3 */,
+				F1000000000000000000001B /* Sources/SlamX/Resources/SnapSoundEffect.mp3 */,
 				F10000000000000000000019 /* Resources/Info.plist */,
 			);
 			name = Resources;
@@ -216,9 +216,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		A10000000000000000000001 /* SlamDih */ = {
+		A10000000000000000000001 /* SlamX */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E10000000000000000000004 /* Build configuration list for PBXNativeTarget "SlamDih" */;
+			buildConfigurationList = E10000000000000000000004 /* Build configuration list for PBXNativeTarget "SlamX" */;
 			buildPhases = (
 				C10000000000000000000001 /* Sources */,
 				C10000000000000000000002 /* Frameworks */,
@@ -229,17 +229,17 @@
 			dependencies = (
 				D10000000000000000000001 /* PBXTargetDependency */,
 			);
-			name = SlamDih;
+			name = SlamX;
 			packageProductDependencies = (
 				A30000000000000000000002 /* Sparkle */,
 			);
-			productName = SlamDih;
-			productReference = A20000000000000000000001 /* SlamDih.app */;
+			productName = SlamX;
+			productReference = A20000000000000000000001 /* SlamX.app */;
 			productType = "com.apple.product-type.application";
 		};
-		A10000000000000000000002 /* SlamDihCore */ = {
+		A10000000000000000000002 /* SlamXCore */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E10000000000000000000007 /* Build configuration list for PBXNativeTarget "SlamDihCore" */;
+			buildConfigurationList = E10000000000000000000007 /* Build configuration list for PBXNativeTarget "SlamXCore" */;
 			buildPhases = (
 				C10000000000000000000004 /* Sources */,
 			);
@@ -247,9 +247,9 @@
 			);
 			dependencies = (
 			);
-			name = SlamDihCore;
-			productName = SlamDihCore;
-			productReference = A20000000000000000000002 /* libSlamDihCore.a */;
+			name = SlamXCore;
+			productName = SlamXCore;
+			productReference = A20000000000000000000002 /* libSlamXCore.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -270,7 +270,7 @@
 					};
 				};
 			};
-			buildConfigurationList = E10000000000000000000001 /* Build configuration list for PBXProject "SlamDih" */;
+			buildConfigurationList = E10000000000000000000001 /* Build configuration list for PBXProject "SlamX" */;
 			compatibilityVersion = "Xcode 15.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -286,8 +286,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				A10000000000000000000001 /* SlamDih */,
-				A10000000000000000000002 /* SlamDihCore */,
+				A10000000000000000000001 /* SlamX */,
+				A10000000000000000000002 /* SlamXCore */,
 			);
 		};
 /* End PBXProject section */
@@ -298,11 +298,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				B1000000000000000000000F /* Resources/Assets.xcassets in Resources */,
-				B1000000000000000000000D /* Sources/SlamDih/Resources/ImpactSoundEffect.mp3 in Resources */,
-				B1000000000000000000000E /* Sources/SlamDih/Resources/AirPopSoundEffect.mp3 in Resources */,
-				B10000000000000000000015 /* Sources/SlamDih/Resources/SpotlightSoundEffect.mp3 in Resources */,
-				B10000000000000000000018 /* Sources/SlamDih/Resources/AlertSoundEffect.mp3 in Resources */,
-				B10000000000000000000019 /* Sources/SlamDih/Resources/SnapSoundEffect.mp3 in Resources */,
+				B1000000000000000000000D /* Sources/SlamX/Resources/ImpactSoundEffect.mp3 in Resources */,
+				B1000000000000000000000E /* Sources/SlamX/Resources/AirPopSoundEffect.mp3 in Resources */,
+				B10000000000000000000015 /* Sources/SlamX/Resources/SpotlightSoundEffect.mp3 in Resources */,
+				B10000000000000000000018 /* Sources/SlamX/Resources/AlertSoundEffect.mp3 in Resources */,
+				B10000000000000000000019 /* Sources/SlamX/Resources/SnapSoundEffect.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -313,19 +313,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B10000000000000000000001 /* Sources/SlamDih/SlamDihApp.swift in Sources */,
-				B10000000000000000000002 /* Sources/SlamDih/Services/MacBookMotionSensor.swift in Sources */,
-				B10000000000000000000003 /* Sources/SlamDih/Services/SoundPlayer.swift in Sources */,
-				B10000000000000000000004 /* Sources/SlamDih/ViewModels/SlapMonitor.swift in Sources */,
-				B10000000000000000000005 /* Sources/SlamDih/Views/AboutView.swift in Sources */,
-				B10000000000000000000006 /* Sources/SlamDih/Views/CalibrationView.swift in Sources */,
-				B10000000000000000000007 /* Sources/SlamDih/Views/ContentView.swift in Sources */,
-				B10000000000000000000008 /* Sources/SlamDih/Views/MonitorView.swift in Sources */,
-				B10000000000000000000014 /* Sources/SlamDih/Views/OnboardingView.swift in Sources */,
-				B10000000000000000000009 /* Sources/SlamDih/Views/SettingsView.swift in Sources */,
-				B10000000000000000000016 /* Sources/SlamDih/Services/UpdateController.swift in Sources */,
-				B1000000000000000000001B /* Sources/SlamDih/Services/GlobalHotKeyController.swift in Sources */,
-				B1000000000000000000001C /* Sources/SlamDih/Services/LaunchAtLoginController.swift in Sources */,
+				B10000000000000000000001 /* Sources/SlamX/SlamXApp.swift in Sources */,
+				B10000000000000000000002 /* Sources/SlamX/Services/MacBookMotionSensor.swift in Sources */,
+				B10000000000000000000003 /* Sources/SlamX/Services/SoundPlayer.swift in Sources */,
+				B10000000000000000000004 /* Sources/SlamX/ViewModels/SlapMonitor.swift in Sources */,
+				B10000000000000000000005 /* Sources/SlamX/Views/AboutView.swift in Sources */,
+				B10000000000000000000006 /* Sources/SlamX/Views/CalibrationView.swift in Sources */,
+				B10000000000000000000007 /* Sources/SlamX/Views/ContentView.swift in Sources */,
+				B10000000000000000000008 /* Sources/SlamX/Views/MonitorView.swift in Sources */,
+				B10000000000000000000014 /* Sources/SlamX/Views/OnboardingView.swift in Sources */,
+				B10000000000000000000009 /* Sources/SlamX/Views/SettingsView.swift in Sources */,
+				B10000000000000000000016 /* Sources/SlamX/Services/UpdateController.swift in Sources */,
+				B1000000000000000000001B /* Sources/SlamX/Services/GlobalHotKeyController.swift in Sources */,
+				B1000000000000000000001C /* Sources/SlamX/Services/LaunchAtLoginController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -333,9 +333,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B1000000000000000000000A /* Sources/SlamDihCore/MotionReportParser.swift in Sources */,
-				B1000000000000000000000B /* Sources/SlamDihCore/MotionSample.swift in Sources */,
-				B1000000000000000000000C /* Sources/SlamDihCore/SlapDetector.swift in Sources */,
+				B1000000000000000000000A /* Sources/SlamXCore/MotionReportParser.swift in Sources */,
+				B1000000000000000000000B /* Sources/SlamXCore/MotionSample.swift in Sources */,
+				B1000000000000000000000C /* Sources/SlamXCore/SlapDetector.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -344,7 +344,7 @@
 /* Begin PBXTargetDependency section */
 		D10000000000000000000001 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = A10000000000000000000002 /* SlamDihCore */;
+			target = A10000000000000000000002 /* SlamXCore */;
 			targetProxy = D10000000000000000000002 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -480,7 +480,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 0.2.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.johannesgrof.slamdih;
+				PRODUCT_BUNDLE_IDENTIFIER = com.johannesgrof.slamx;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -504,7 +504,7 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MARKETING_VERSION = 0.2.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.johannesgrof.slamdih;
+				PRODUCT_BUNDLE_IDENTIFIER = com.johannesgrof.slamx;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -518,7 +518,7 @@
 				DEFINES_MODULE = YES;
 				MACH_O_TYPE = staticlib;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				PRODUCT_NAME = SlamDihCore;
+				PRODUCT_NAME = SlamXCore;
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 6.0;
 			};
@@ -530,7 +530,7 @@
 				DEFINES_MODULE = YES;
 				MACH_O_TYPE = staticlib;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				PRODUCT_NAME = SlamDihCore;
+				PRODUCT_NAME = SlamXCore;
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 6.0;
 			};
@@ -539,7 +539,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E10000000000000000000001 /* Build configuration list for PBXProject "SlamDih" */ = {
+		E10000000000000000000001 /* Build configuration list for PBXProject "SlamX" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E10000000000000000000002 /* Debug */,
@@ -548,7 +548,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E10000000000000000000004 /* Build configuration list for PBXNativeTarget "SlamDih" */ = {
+		E10000000000000000000004 /* Build configuration list for PBXNativeTarget "SlamX" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E10000000000000000000005 /* Debug */,
@@ -557,7 +557,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E10000000000000000000007 /* Build configuration list for PBXNativeTarget "SlamDihCore" */ = {
+		E10000000000000000000007 /* Build configuration list for PBXNativeTarget "SlamXCore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E10000000000000000000008 /* Debug */,

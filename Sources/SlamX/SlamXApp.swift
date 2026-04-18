@@ -2,7 +2,7 @@ import AppKit
 import SwiftUI
 
 @main
-struct SlamDihApp: App {
+struct SlamXApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @Environment(\.openWindow) private var openWindow
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
@@ -11,7 +11,7 @@ struct SlamDihApp: App {
     @State private var updateController = UpdateController()
 
     var body: some Scene {
-        WindowGroup("SlamDih", id: "main") {
+        WindowGroup("SlamX", id: "main") {
             Group {
                 if hasCompletedOnboarding {
                     ContentView(monitor: monitor, updateController: updateController) {
@@ -34,7 +34,7 @@ struct SlamDihApp: App {
             }
         }
         .commands {
-            CommandMenu("SlamDih") {
+            CommandMenu("SlamX") {
                 Button(monitor.monitoringActionTitle) {
                     monitor.toggleMonitoring()
                 }
@@ -73,7 +73,7 @@ struct SlamDihApp: App {
             SettingsView(monitor: monitor)
         }
 
-        MenuBarExtra("SlamDih", systemImage: "hand.raised.fill") {
+        MenuBarExtra("SlamX", systemImage: "hand.raised.fill") {
             MenuBarPanel(
                 monitor: monitor,
                 updateController: updateController,
@@ -84,7 +84,7 @@ struct SlamDihApp: App {
     }
 
     private func showApp() {
-        if let window = NSApp.windows.first(where: { $0.title == "SlamDih" }) {
+        if let window = NSApp.windows.first(where: { $0.title == "SlamX" }) {
             if window.isMiniaturized {
                 window.deminiaturize(nil)
             }
