@@ -39,3 +39,4 @@ shasum -a 256 "$DMG_PATH" > "$DMG_PATH.sha256"
 
 echo "Created $DMG_PATH"
 echo "Created $DMG_PATH.sha256"
+echo "Note: this DMG is not notarized by this script. Treat ad-hoc builds as technical previews."

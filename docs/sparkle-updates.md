@@ -7,6 +7,8 @@ SlamDih uses Sparkle 2 for in-app updates.
 - The Sparkle private signing key is stored in the local macOS login Keychain.
 - The embedded public key is stored in `Resources/Info.plist` as `SUPublicEDKey`.
 - Sparkle needs a public `appcast.xml` and public DMG asset URL. Private GitHub release assets do not work for normal users because Sparkle does not have GitHub authentication.
+- Sparkle signing is not the same as Apple Developer ID signing. Local/ad-hoc builds can be updated by Sparkle, but they are not notarized and are not a polished public binary distribution.
+- Developer ID signing and notarization require Apple Developer Program membership. Until that is available, treat generated DMGs as technical preview builds.
 
 ## Release Flow
 
@@ -17,6 +19,12 @@ Build a local `.app` bundle through the Xcode project:
 ```
 
 This is the source of truth for packaging. Do not build the release app by manually copying the SwiftPM executable into an `.app` bundle; Sparkle and embedded frameworks need Xcode's app bundle layout.
+
+By default this creates an ad-hoc signed local build. If a Developer ID identity is available later, pass it explicitly:
+
+```bash
+CODE_SIGN_IDENTITY="Developer ID Application: Your Name (TEAMID)" ./scripts/package-app.sh 0.2.0 2
+```
 
 Build the DMG:
 
@@ -50,6 +58,17 @@ The app checks this feed:
 ```text
 https://github.com/jx-grxf/SlamDih/releases/latest/download/appcast.xml
 ```
+
+For a paid/private-source future, the source repository can remain private, but the appcast and binary asset still need to be public or otherwise reachable without GitHub authentication.
+
+## Public Build Checklist
+
+- Confirm no secrets or private keys are committed.
+- Confirm the app has no microphone permission or fallback UI.
+- Confirm the README explains sensor-only support and update network access.
+- Run tests before generating the DMG.
+- Validate `appcast.xml` before upload.
+- Before presenting a build to non-technical users, sign with Developer ID, notarize, staple the ticket, and test launch on a Gatekeeper-enabled Mac.
 
 ## Testing
 

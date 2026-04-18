@@ -62,7 +62,7 @@ final class UpdateController {
         case .idle:
             return "Check for updates"
         case .checking:
-            return "Sparkle is checking GitHub releases"
+            return "Sparkle is checking the public update feed"
         case .updateAvailable(let update):
             return "Show release notes for \(update.title)"
         case .updateReady(let update):

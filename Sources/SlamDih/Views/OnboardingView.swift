@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct OnboardingView: View {
@@ -129,29 +130,53 @@ struct OnboardingView: View {
     private var actionRow: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 12) {
-                Button {
-                    finishOnboarding()
-                    startApp()
-                } label: {
-                    Label("Start using SlamDih", systemImage: "arrow.right.circle.fill")
-                        .frame(width: 230)
-                }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
-                .tint(.mint)
-                .disabled(!canStartApp)
-
-                Button {
-                    Task {
-                        await runAvailabilityCheck()
+                if monitor.sensorAvailability == .unsupported {
+                    Button {
+                        Task {
+                            await runAvailabilityCheck()
+                        }
+                    } label: {
+                        Label("Check Again", systemImage: "arrow.clockwise")
+                            .frame(width: 144)
                     }
-                } label: {
-                    Label("Check Again", systemImage: "arrow.clockwise")
-                        .frame(width: 144)
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    .tint(.mint)
+                    .disabled(monitor.sensorAvailability == .checking)
+
+                    Button {
+                        NSApp.terminate(nil)
+                    } label: {
+                        Label("Quit", systemImage: "xmark.circle.fill")
+                            .frame(width: 112)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.large)
+                } else {
+                    Button {
+                        finishOnboarding()
+                        startApp()
+                    } label: {
+                        Label("Start using SlamDih", systemImage: "arrow.right.circle.fill")
+                            .frame(width: 230)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    .tint(.mint)
+                    .disabled(!canStartApp)
+
+                    Button {
+                        Task {
+                            await runAvailabilityCheck()
+                        }
+                    } label: {
+                        Label("Check Again", systemImage: "arrow.clockwise")
+                            .frame(width: 144)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.large)
+                    .disabled(monitor.sensorAvailability == .checking)
                 }
-                .buttonStyle(.bordered)
-                .controlSize(.large)
-                .disabled(monitor.sensorAvailability == .checking)
             }
 
             Button {
@@ -199,7 +224,7 @@ struct OnboardingView: View {
         case .detected:
             return "The motion sensor is available. SlamDih will run one quick local detection check."
         case .unsupported:
-            return monitor.unsupportedSensorExplanation
+            return "\(monitor.unsupportedSensorExplanation) You can check again after moving to a supported MacBook or quit SlamDih safely."
         }
     }
 
@@ -501,9 +526,9 @@ private struct ProgressStepsView: View {
 
             OnboardingStepItem(
                 title: "Detection",
-                value: hasCompletedSoundTest ? "Verified" : "Pending",
-                symbol: hasCompletedSoundTest ? "checkmark.circle.fill" : "hand.tap.fill",
-                tint: hasCompletedSoundTest ? .mint : .white.opacity(0.56)
+                value: detectionStatus,
+                symbol: detectionSymbol,
+                tint: detectionTint
             )
 
             OnboardingStepItem(
@@ -516,9 +541,9 @@ private struct ProgressStepsView: View {
 
             OnboardingStepItem(
                 title: "Ready",
-                value: canStart ? "Continue" : "Waiting",
-                symbol: canStart ? "arrow.right.circle.fill" : "clock.fill",
-                tint: canStart ? .mint : .white.opacity(0.56)
+                value: readyStatus,
+                symbol: readySymbol,
+                tint: readyTint
             )
         }
         .padding(12)
@@ -553,6 +578,54 @@ private struct ProgressStepsView: View {
         case .unsupported:
             return .red
         }
+    }
+
+    private var detectionStatus: String {
+        if hasCompletedSoundTest {
+            return "Verified"
+        }
+
+        return sensorAvailability == .unsupported ? "Unavailable" : "Pending"
+    }
+
+    private var detectionSymbol: String {
+        if hasCompletedSoundTest {
+            return "checkmark.circle.fill"
+        }
+
+        return sensorAvailability == .unsupported ? "minus.circle.fill" : "hand.tap.fill"
+    }
+
+    private var detectionTint: Color {
+        if hasCompletedSoundTest {
+            return .mint
+        }
+
+        return sensorAvailability == .unsupported ? .red.opacity(0.82) : .white.opacity(0.56)
+    }
+
+    private var readyStatus: String {
+        if canStart {
+            return "Continue"
+        }
+
+        return sensorAvailability == .unsupported ? "Blocked" : "Waiting"
+    }
+
+    private var readySymbol: String {
+        if canStart {
+            return "arrow.right.circle.fill"
+        }
+
+        return sensorAvailability == .unsupported ? "lock.fill" : "clock.fill"
+    }
+
+    private var readyTint: Color {
+        if canStart {
+            return .mint
+        }
+
+        return sensorAvailability == .unsupported ? .red.opacity(0.82) : .white.opacity(0.56)
     }
 }
 

@@ -5,6 +5,7 @@
 **A native macOS utility that turns MacBook motion impacts into local sound feedback.**
 
 ![Release](https://img.shields.io/github/v/release/jx-grxf/SlamDih?label=release)
+![Status](https://img.shields.io/badge/status-experimental-f59e0b)
 ![Swift](https://img.shields.io/badge/Swift-6.3-F05138?logo=swift&logoColor=white)
 ![SwiftUI](https://img.shields.io/badge/SwiftUI-native%20macOS-0A84FF)
 ![IOKit](https://img.shields.io/badge/IOKit-HID%20sensor%20stream-2D3748)
@@ -14,34 +15,42 @@
 
 </div>
 
-SlamDih is a small MacBook utility that listens to the built-in Apple SPU accelerometer, detects sharp impact spikes, increments a counter, and plays bundled sound feedback.
+SlamDih is a small experimental MacBook utility that listens to the built-in Apple SPU accelerometer, detects sharp impact spikes, increments a counter, and plays local sound feedback.
 
-It is built as a private, local-first macOS tool. No sensor data leaves the machine.
+It is built as a local-first macOS project: motion samples stay on the Mac, no microphone path exists, and live detection is only available on supported MacBooks.
 
 ---
 
-# Menu
+## Showcase
 
-![SlamDih macOS showcase](docs/showcase/monitor-slamdih.jpeg)
+<p align="center">
+  <img src="docs/showcase/slamdih-showcase.svg" alt="SlamDih showcase" width="860">
+</p>
+
+<p align="center">
+  <img src="docs/showcase/monitor-slamdih.jpeg" alt="SlamDih monitor screen" width="860">
+</p>
 
 ---
 
 ## Contents
 
 - [SlamDih](#slamdih)
-- [Menu](#menu)
-  - [Contents](#contents)
-  - [Highlights](#highlights)
-  - [Why This Exists](#why-this-exists)
-  - [Current Workflow](#current-workflow)
-  - [Tech Stack](#tech-stack)
-  - [Requirements](#requirements)
-  - [Quick Start](#quick-start)
-  - [Usage](#usage)
-  - [Development](#development)
-  - [Research Notes](#research-notes)
-  - [Roadmap](#roadmap)
-  - [License](#license)
+- [Showcase](#showcase)
+- [Highlights](#highlights)
+- [Compatibility](#compatibility)
+- [Why This Exists](#why-this-exists)
+- [Current Workflow](#current-workflow)
+- [Tech Stack](#tech-stack)
+- [Requirements](#requirements)
+- [Quick Start](#quick-start)
+- [Usage](#usage)
+- [Privacy](#privacy)
+- [Release Status](#release-status)
+- [Development](#development)
+- [Research Notes](#research-notes)
+- [Roadmap](#roadmap)
+- [License](#license)
 
 ---
 
@@ -49,7 +58,7 @@ It is built as a private, local-first macOS tool. No sensor data leaves the mach
 
 | Feature | Description |
 |---|---|
-| Native macOS UI | SwiftUI app with `NavigationSplitView`, toolbar actions, settings, and a menu bar extra |
+| Native macOS UI | SwiftUI app with `NavigationSplitView`, toolbar actions, Settings, and a menu bar extra |
 | Apple SPU sensor access | Reads the MacBook accelerometer through IOKit HID reports |
 | Live telemetry | Shows event count, current impact, peak impact, sample rate, axis values, and raw HID bytes |
 | Adjustable detection | Sensitivity slider, presets, and a guided calibration wizard |
@@ -57,13 +66,22 @@ It is built as a private, local-first macOS tool. No sensor data leaves the mach
 | Mac utility controls | Menu bar controls, launch-at-login, persisted counter and threshold, a global mute shortcut, and Sparkle update checks |
 | Testable core | Parser and impact detector are separated into a small Swift library with unit tests |
 
+## Compatibility
+
+| Mac | Status | Notes |
+|---|---|---|
+| Apple Silicon MacBook with exposed Apple SPU accelerometer | Supported | Intended target |
+| Intel MacBook | Unknown | Depends on whether the expected HID device is exposed |
+| iMac, Mac mini, Mac Studio, Mac Pro | Unsupported | No MacBook motion sensor |
+| Macs without accessible `AppleSPUHIDDevice` | Unsupported | The app intentionally has no microphone fallback |
+
 ---
 
 ## Why This Exists
 
-MacBooks have internal motion hardware, but Apple does not expose a clean public Core Motion API for MacBook accelerometer data. The practical route for a private MacBook tool is the HID stream exposed by `AppleSPUHIDDevice`.
+MacBooks have internal motion hardware, but Apple does not expose a clean public Core Motion API for MacBook accelerometer data. The practical route for this experiment is the HID stream exposed by `AppleSPUHIDDevice`.
 
-SlamDih wraps that low-level stream in a tiny app with visible telemetry so calibration is not guesswork.
+SlamDih wraps that low-level stream in a tiny native app with visible telemetry so calibration is not guesswork.
 
 ---
 
@@ -89,7 +107,7 @@ If no accessible Apple SPU accelerometer is found during onboarding, SlamDih exp
 | Sensor access | IOKit HID, `AppleSPUHIDDevice` |
 | Audio | AVFoundation |
 | Package | Swift Package Manager |
-| Tests | Swift Testing |
+| Tests | XCTest |
 
 ---
 
@@ -116,7 +134,7 @@ Build a local release app:
 open .build/xcode-release/Release/SlamDih.app
 ```
 
-Create the Sparkle-ready release DMG and appcast:
+Create a local Sparkle-ready DMG and appcast:
 
 ```bash
 ./scripts/create-dmg.sh 0.2.1 3
@@ -141,6 +159,32 @@ open SlamDih.xcodeproj
 - Use the speaker button or `Command-T` to test the selected sound.
 - Use `Command-Shift-M` to mute or unmute sounds globally.
 - Use the reset button or `Command-0` to clear the counter.
+
+---
+
+## Privacy
+
+- SlamDih reads local Apple SPU accelerometer reports through IOKit.
+- Motion samples, raw HID bytes, counters, thresholds, and selected sounds are not uploaded.
+- Sparkle update checks contact the public update feed configured in `Resources/Info.plist`.
+- Custom MP3 files are copied into the app's local support storage only after the user chooses them.
+
+---
+
+## Release Status
+
+SlamDih is public-source friendly, but the default release scripts currently create local test builds unless a Developer ID identity is supplied.
+
+| Release concern | Current status |
+|---|---|
+| Source safety | No secrets, no microphone permission, and no microphone fallback are used |
+| Local builds | Supported with Xcode or Command Line Tools |
+| Sparkle update feed | Supported, but the feed and DMG must be publicly reachable |
+| Developer ID signing | Optional through `CODE_SIGN_IDENTITY`; requires Apple Developer Program membership |
+| Notarization | Not implemented yet because it requires Apple Developer Program access |
+| Gatekeeper UX | Local/ad-hoc builds may show macOS security warnings |
+
+Do not present a locally built DMG as a polished public binary until it is Developer-ID signed and notarized.
 
 ---
 
@@ -190,9 +234,9 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project Sla
 ## Roadmap
 
 - Hide raw HID telemetry behind an Advanced view for a cleaner public build.
-- Add signed and notarized release packaging.
-- Refine product copy and screenshots for a public launch.
-- Add a small signed release workflow after the private repo is created.
+- Add Developer ID signing and notarized release packaging after Apple Developer Program enrollment.
+- Refine product copy and screenshots for a broader public launch.
+- Add a signed release workflow after Developer ID credentials are available.
 
 ---
 
