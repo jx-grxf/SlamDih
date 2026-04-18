@@ -12,3 +12,5 @@ build/
 node_modules/
 .DS_Store
 *.log
+AGENTS.md
+.agent-security-handover/
