@@ -9,6 +9,8 @@ struct CalibrationView: View {
     @State private var lightSlapPeak = 0.0
     @State private var displayedImpact = 0.0
     @State private var phaseStartedAt = Date.distantPast
+    @State private var isWaitingForQuietImpact = false
+    @State private var quietSampleCount = 0
     @State private var wasMonitoringBeforeCalibration = false
     @State private var impactSamplingTask: Task<Void, Never>?
     @State private var calibrationTask: Task<Void, Never>?
@@ -63,7 +65,7 @@ struct CalibrationView: View {
                     .foregroundStyle(phase.tint)
             }
 
-            Text(phase.instruction)
+            Text(wizardInstruction)
                 .font(.title3.weight(.semibold))
                 .foregroundStyle(.white.opacity(0.86))
                 .fixedSize(horizontal: false, vertical: true)
@@ -154,6 +156,8 @@ struct CalibrationView: View {
         baselinePeak = 0
         lightSlapPeak = 0
         displayedImpact = 0
+        isWaitingForQuietImpact = true
+        quietSampleCount = 0
         wasMonitoringBeforeCalibration = monitor.isMonitoring
         monitor.resetCalibrationImpactPeak()
         phase = .deskTap
@@ -184,6 +188,9 @@ struct CalibrationView: View {
         if phase.isActive {
             phase = .idle
         }
+
+        isWaitingForQuietImpact = false
+        quietSampleCount = 0
     }
 
     private func finishCalibration() {
@@ -232,8 +239,16 @@ struct CalibrationView: View {
 
     private func processCalibrationImpact(_ impact: Double) {
         guard phase.isActive,
-              monitor.isMonitoring,
-              Date().timeIntervalSince(phaseStartedAt) >= CalibrationDetection.phaseArmDelay else {
+              monitor.isMonitoring else {
+            return
+        }
+
+        if isWaitingForQuietImpact {
+            waitForQuietImpact(impact)
+            return
+        }
+
+        guard Date().timeIntervalSince(phaseStartedAt) >= CalibrationDetection.phaseArmDelay else {
             return
         }
 
@@ -264,12 +279,57 @@ struct CalibrationView: View {
     private func moveToLightSlap() {
         phase = .lightSlap
         phaseStartedAt = Date()
+        isWaitingForQuietImpact = true
+        quietSampleCount = 0
         monitor.resetCalibrationImpactPeak()
-        monitor.status = "Calibration: light tap"
+        monitor.status = "Calibration: settling"
     }
 
     private var lightTapRequiredImpact: Double {
         CalibrationDetection.minimumImpact
+    }
+
+    private func waitForQuietImpact(_ impact: Double) {
+        if impact <= CalibrationDetection.quietImpact {
+            quietSampleCount += 1
+        } else {
+            quietSampleCount = 0
+        }
+
+        monitor.resetCalibrationImpactPeak()
+
+        guard quietSampleCount >= CalibrationDetection.requiredQuietSamples else {
+            return
+        }
+
+        isWaitingForQuietImpact = false
+        quietSampleCount = 0
+        phaseStartedAt = Date()
+        monitor.resetCalibrationImpactPeak()
+
+        switch phase {
+        case .deskTap:
+            monitor.status = "Calibration: desk tap"
+        case .lightSlap:
+            monitor.status = "Calibration: light tap"
+        case .idle, .finished:
+            break
+        }
+    }
+
+    private var wizardInstruction: String {
+        guard isWaitingForQuietImpact else {
+            return phase.instruction
+        }
+
+        switch phase {
+        case .deskTap:
+            return "Hold still for a moment, then tap the desk once."
+        case .lightSlap:
+            return "Good. Let the sensor settle, then apply one light tap to the MacBook."
+        case .idle, .finished:
+            return phase.instruction
+        }
     }
 }
 
@@ -277,6 +337,8 @@ private enum CalibrationDetection {
     static let samplingInterval: Duration = .milliseconds(25)
     static let phaseArmDelay = 0.25
     static let minimumImpact = 0.025
+    static let quietImpact = 0.012
+    static let requiredQuietSamples = 4
 }
 
 private enum CalibrationPhase {
