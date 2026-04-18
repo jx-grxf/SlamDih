@@ -7,7 +7,10 @@ struct CalibrationView: View {
     @State private var phase: CalibrationPhase = .idle
     @State private var baselinePeak = 0.0
     @State private var lightSlapPeak = 0.0
+    @State private var displayedImpact = 0.0
+    @State private var phaseStartedAt = Date.distantPast
     @State private var wasMonitoringBeforeCalibration = false
+    @State private var impactSamplingTask: Task<Void, Never>?
     @State private var calibrationTask: Task<Void, Never>?
 
     var body: some View {
@@ -36,11 +39,12 @@ struct CalibrationView: View {
             )
             .ignoresSafeArea()
         }
-        .onChange(of: monitor.currentImpact) { _, impact in
-            recordCalibrationImpact(impact)
+        .onAppear {
+            startImpactSampling()
         }
         .onDisappear {
             cancelCalibration()
+            stopImpactSampling()
         }
     }
 
@@ -133,9 +137,9 @@ struct CalibrationView: View {
         VStack(alignment: .leading, spacing: 12) {
             Label("Live impact", systemImage: "waveform.path.ecg")
                 .font(.headline)
-            ProgressView(value: min(monitor.currentImpact / 2.5, 1.0))
-                .tint(monitor.currentImpact >= monitor.threshold ? .mint : .orange)
-            Text("\(monitor.currentImpact, specifier: "%.3f") g")
+            ProgressView(value: min(displayedImpact / 2.5, 1.0))
+                .tint(displayedImpact >= monitor.threshold ? .mint : .orange)
+            Text("\(displayedImpact, specifier: "%.3f") g")
                 .font(.system(size: 54, weight: .bold, design: .rounded))
                 .monospacedDigit()
         }
@@ -149,8 +153,10 @@ struct CalibrationView: View {
 
         baselinePeak = 0
         lightSlapPeak = 0
+        displayedImpact = 0
         wasMonitoringBeforeCalibration = monitor.isMonitoring
         phase = .deskTap
+        phaseStartedAt = Date()
 
         calibrationTask = Task { @MainActor in
             if !monitor.isMonitoring {
@@ -163,19 +169,6 @@ struct CalibrationView: View {
             }
 
             monitor.status = "Calibration: desk tap"
-            try? await Task.sleep(for: .seconds(3))
-            guard !Task.isCancelled else {
-                return
-            }
-
-            phase = .lightSlap
-            monitor.status = "Calibration: light tap"
-            try? await Task.sleep(for: .seconds(4))
-            guard !Task.isCancelled else {
-                return
-            }
-
-            finishCalibration()
         }
     }
 
@@ -193,6 +186,11 @@ struct CalibrationView: View {
     }
 
     private func finishCalibration() {
+        guard baselinePeak >= CalibrationDetection.minimumImpact,
+              lightSlapPeak >= lightTapRequiredImpact else {
+            return
+        }
+
         calibrationTask = nil
 
         let minimumGap = 0.05
@@ -210,16 +208,75 @@ struct CalibrationView: View {
         }
     }
 
-    private func recordCalibrationImpact(_ impact: Double) {
+    private func startImpactSampling() {
+        guard impactSamplingTask == nil else {
+            return
+        }
+
+        impactSamplingTask = Task { @MainActor in
+            while !Task.isCancelled {
+                let impact = monitor.currentImpact
+                displayedImpact = impact
+                processCalibrationImpact(impact)
+
+                try? await Task.sleep(for: CalibrationDetection.samplingInterval)
+            }
+        }
+    }
+
+    private func stopImpactSampling() {
+        impactSamplingTask?.cancel()
+        impactSamplingTask = nil
+    }
+
+    private func processCalibrationImpact(_ impact: Double) {
+        guard phase.isActive,
+              monitor.isMonitoring,
+              Date().timeIntervalSince(phaseStartedAt) >= CalibrationDetection.phaseArmDelay else {
+            return
+        }
+
         switch phase {
         case .deskTap:
             baselinePeak = max(baselinePeak, impact)
+
+            guard impact >= CalibrationDetection.minimumImpact else {
+                return
+            }
+
+            moveToLightSlap()
         case .lightSlap:
             lightSlapPeak = max(lightSlapPeak, impact)
+
+            guard impact >= lightTapRequiredImpact else {
+                return
+            }
+
+            finishCalibration()
         case .idle, .finished:
             return
         }
     }
+
+    private func moveToLightSlap() {
+        phase = .lightSlap
+        phaseStartedAt = Date()
+        monitor.status = "Calibration: light tap"
+    }
+
+    private var lightTapRequiredImpact: Double {
+        max(
+            CalibrationDetection.minimumImpact,
+            baselinePeak + CalibrationDetection.minimumPeakSeparation
+        )
+    }
+}
+
+private enum CalibrationDetection {
+    static let samplingInterval: Duration = .milliseconds(80)
+    static let phaseArmDelay = 0.35
+    static let minimumImpact = 0.10
+    static let minimumPeakSeparation = 0.03
 }
 
 private enum CalibrationPhase {
@@ -250,9 +307,9 @@ private enum CalibrationPhase {
         case .idle:
             "Run the wizard to measure desk noise first, then a light MacBook tap."
         case .deskTap:
-            "Tap the desk firmly once, away from the MacBook."
+            "Tap the desk firmly once, away from the MacBook. The wizard waits for a clear peak."
         case .lightSlap:
-            "Now apply one light tap to the MacBook."
+            "Now apply one light tap to the MacBook. Calibration finishes only after a clear tap."
         case .finished:
             "Threshold updated from the measured peaks. Fine-tune with the slider if needed."
         }
