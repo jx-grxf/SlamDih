@@ -3,23 +3,23 @@
 import PackageDescription
 
 let package = Package(
-    name: "SlamDih",
+    name: "SlamX",
     platforms: [
         .macOS(.v14)
     ],
     products: [
-        .executable(name: "SlamDih", targets: ["SlamDih"]),
-        .library(name: "SlamDihCore", targets: ["SlamDihCore"])
+        .executable(name: "SlamX", targets: ["SlamX"]),
+        .library(name: "SlamXCore", targets: ["SlamXCore"])
     ],
     dependencies: [
         .package(url: "https://github.com/sparkle-project/Sparkle", from: "2.7.3")
     ],
     targets: [
-        .target(name: "SlamDihCore"),
+        .target(name: "SlamXCore"),
         .executableTarget(
-            name: "SlamDih",
+            name: "SlamX",
             dependencies: [
-                "SlamDihCore",
+                "SlamXCore",
                 .product(name: "Sparkle", package: "Sparkle")
             ],
             resources: [
@@ -38,8 +38,8 @@ let package = Package(
             ]
         ),
         .testTarget(
-            name: "SlamDihCoreTests",
-            dependencies: ["SlamDihCore"]
+            name: "SlamXCoreTests",
+            dependencies: ["SlamXCore"]
         )
     ]
 )

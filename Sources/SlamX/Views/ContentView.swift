@@ -33,7 +33,7 @@ struct ContentView: View {
                     .symbolRenderingMode(.hierarchical)
                     .tag(section)
             }
-            .navigationTitle("SlamDih")
+            .navigationTitle("SlamX")
             .safeAreaInset(edge: .bottom) {
                 SidebarStatusView(monitor: monitor)
                     .padding(16)

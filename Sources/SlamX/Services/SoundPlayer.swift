@@ -239,7 +239,7 @@ final class SoundPlayer {
         }
 
         return applicationSupportURL
-            .appendingPathComponent("SlamDih", isDirectory: true)
+            .appendingPathComponent("SlamX", isDirectory: true)
             .appendingPathComponent("CustomSounds", isDirectory: true)
     }
 

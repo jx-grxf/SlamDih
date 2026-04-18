@@ -1,3 +1,4 @@
+import AppKit
 import SwiftUI
 
 struct OnboardingView: View {
@@ -27,7 +28,7 @@ struct OnboardingView: View {
                 HStack(alignment: .center, spacing: 56) {
                     VStack(alignment: .leading, spacing: 24) {
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("SlamDih")
+                            Text("SlamX")
                                 .font(.system(size: 18, weight: .bold, design: .rounded))
                                 .foregroundStyle(.mint)
 
@@ -90,7 +91,7 @@ struct OnboardingView: View {
         .alert("Unsupported-device test mode", isPresented: $showsUnsupportedTestModeNotice) {
             Button("OK", role: .cancel) { }
         } message: {
-            Text("SlamDih is now simulating a Mac without the Apple SPU accelerometer. This is only for testing the unsupported-device flow; it does not mean this Mac is actually unsupported.")
+            Text("SlamX is now simulating a Mac without the Apple SPU accelerometer. This is only for testing the unsupported-device flow; it does not mean this Mac is actually unsupported.")
         }
         .sheet(isPresented: $isShowingCalibration) {
             CalibrationView(monitor: monitor) {
@@ -112,7 +113,7 @@ struct OnboardingView: View {
 
     private var header: some View {
         HStack {
-            Label("SlamDih", systemImage: "hand.raised.fill")
+            Label("SlamX", systemImage: "hand.raised.fill")
                 .font(.headline.weight(.bold))
                 .symbolRenderingMode(.hierarchical)
                 .foregroundStyle(.white)
@@ -129,29 +130,53 @@ struct OnboardingView: View {
     private var actionRow: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 12) {
-                Button {
-                    finishOnboarding()
-                    startApp()
-                } label: {
-                    Label("Start using SlamDih", systemImage: "arrow.right.circle.fill")
-                        .frame(width: 230)
-                }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
-                .tint(.mint)
-                .disabled(!canStartApp)
-
-                Button {
-                    Task {
-                        await runAvailabilityCheck()
+                if monitor.sensorAvailability == .unsupported {
+                    Button {
+                        Task {
+                            await runAvailabilityCheck()
+                        }
+                    } label: {
+                        Label("Check Again", systemImage: "arrow.clockwise")
+                            .frame(width: 144)
                     }
-                } label: {
-                    Label("Check Again", systemImage: "arrow.clockwise")
-                        .frame(width: 144)
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    .tint(.mint)
+                    .disabled(monitor.sensorAvailability == .checking)
+
+                    Button {
+                        NSApp.terminate(nil)
+                    } label: {
+                        Label("Quit", systemImage: "xmark.circle.fill")
+                            .frame(width: 112)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.large)
+                } else {
+                    Button {
+                        finishOnboarding()
+                        startApp()
+                    } label: {
+                        Label("Start using SlamX", systemImage: "arrow.right.circle.fill")
+                            .frame(width: 230)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
+                    .tint(.mint)
+                    .disabled(!canStartApp)
+
+                    Button {
+                        Task {
+                            await runAvailabilityCheck()
+                        }
+                    } label: {
+                        Label("Check Again", systemImage: "arrow.clockwise")
+                            .frame(width: 144)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.large)
+                    .disabled(monitor.sensorAvailability == .checking)
                 }
-                .buttonStyle(.bordered)
-                .controlSize(.large)
-                .disabled(monitor.sensorAvailability == .checking)
             }
 
             Button {
@@ -189,7 +214,7 @@ struct OnboardingView: View {
     private var description: String {
         switch monitor.sensorAvailability {
         case .checking:
-            return "SlamDih is checking whether this Mac exposes the Apple SPU motion sensor."
+            return "SlamX is checking whether this Mac exposes the Apple SPU motion sensor."
         case .detected where hasCompletedSoundTest && hasCompletedCalibration:
             return "Detection is verified and the beta calibration has tuned the trigger threshold."
         case .detected where hasCompletedSoundTest:
@@ -197,9 +222,9 @@ struct OnboardingView: View {
         case .detected where isSoundTestActive:
             return "Apply one light tap to verify that the sensor can detect a clear impact."
         case .detected:
-            return "The motion sensor is available. SlamDih will run one quick local detection check."
+            return "The motion sensor is available. SlamX will run one quick local detection check."
         case .unsupported:
-            return monitor.unsupportedSensorExplanation
+            return "\(monitor.unsupportedSensorExplanation) You can check again after moving to a supported MacBook or quit SlamX safely."
         }
     }
 
@@ -501,9 +526,9 @@ private struct ProgressStepsView: View {
 
             OnboardingStepItem(
                 title: "Detection",
-                value: hasCompletedSoundTest ? "Verified" : "Pending",
-                symbol: hasCompletedSoundTest ? "checkmark.circle.fill" : "hand.tap.fill",
-                tint: hasCompletedSoundTest ? .mint : .white.opacity(0.56)
+                value: detectionStatus,
+                symbol: detectionSymbol,
+                tint: detectionTint
             )
 
             OnboardingStepItem(
@@ -516,9 +541,9 @@ private struct ProgressStepsView: View {
 
             OnboardingStepItem(
                 title: "Ready",
-                value: canStart ? "Continue" : "Waiting",
-                symbol: canStart ? "arrow.right.circle.fill" : "clock.fill",
-                tint: canStart ? .mint : .white.opacity(0.56)
+                value: readyStatus,
+                symbol: readySymbol,
+                tint: readyTint
             )
         }
         .padding(12)
@@ -553,6 +578,54 @@ private struct ProgressStepsView: View {
         case .unsupported:
             return .red
         }
+    }
+
+    private var detectionStatus: String {
+        if hasCompletedSoundTest {
+            return "Verified"
+        }
+
+        return sensorAvailability == .unsupported ? "Unavailable" : "Pending"
+    }
+
+    private var detectionSymbol: String {
+        if hasCompletedSoundTest {
+            return "checkmark.circle.fill"
+        }
+
+        return sensorAvailability == .unsupported ? "minus.circle.fill" : "hand.tap.fill"
+    }
+
+    private var detectionTint: Color {
+        if hasCompletedSoundTest {
+            return .mint
+        }
+
+        return sensorAvailability == .unsupported ? .red.opacity(0.82) : .white.opacity(0.56)
+    }
+
+    private var readyStatus: String {
+        if canStart {
+            return "Continue"
+        }
+
+        return sensorAvailability == .unsupported ? "Blocked" : "Waiting"
+    }
+
+    private var readySymbol: String {
+        if canStart {
+            return "arrow.right.circle.fill"
+        }
+
+        return sensorAvailability == .unsupported ? "lock.fill" : "clock.fill"
+    }
+
+    private var readyTint: Color {
+        if canStart {
+            return .mint
+        }
+
+        return sensorAvailability == .unsupported ? .red.opacity(0.82) : .white.opacity(0.56)
     }
 }
 

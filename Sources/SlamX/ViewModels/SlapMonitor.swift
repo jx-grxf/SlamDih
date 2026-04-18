@@ -1,6 +1,6 @@
 import Foundation
 import Observation
-import SlamDihCore
+import SlamXCore
 
 enum SensorAvailability: Equatable {
     case checking
@@ -211,7 +211,7 @@ final class SlapMonitor {
             return "Test mode is simulating a Mac without the Apple SPU accelerometer. This is only for testing the unsupported-device flow."
         }
 
-        return "SlamDih could not find an accessible Apple SPU accelerometer. This Mac does not expose the motion sensor SlamDih needs."
+        return "SlamX could not find an accessible Apple SPU accelerometer. This Mac does not expose the motion sensor SlamX needs."
     }
 
     var xAxis: Double {
@@ -427,7 +427,7 @@ final class SlapMonitor {
 
         monitoringActivity = ProcessInfo.processInfo.beginActivity(
             options: [.userInitiatedAllowingIdleSystemSleep, .latencyCritical],
-            reason: "Keep SlamDih listening for local impact events."
+            reason: "Keep SlamX listening for local impact events."
         )
     }
 

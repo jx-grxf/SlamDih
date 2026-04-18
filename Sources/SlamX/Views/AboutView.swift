@@ -25,7 +25,7 @@ struct AboutView: View {
                         AboutRow(title: "Backend", value: "IOKit HID / AppleSPU")
                         AboutRow(title: "Target", value: "macOS 14+")
                         AboutRow(title: "Author", value: "Johannes Grof (MIT)")
-                        AboutRow(title: "Repository", value: "https://github.com/jx-grxf/SlamDih")
+                        AboutRow(title: "Repository", value: "https://github.com/jx-grxf/SlamX")
 
                         Button {
                             updateController.checkForUpdates()
@@ -36,7 +36,7 @@ struct AboutView: View {
                         .buttonStyle(.borderedProminent)
                         .controlSize(.large)
                         .disabled(updateController.isCheckingForUpdates)
-                        .help("Check for SlamDih updates")
+                        .help("Check for SlamX updates")
                     }
                     .font(.title3)
                     .padding(18)
@@ -47,7 +47,7 @@ struct AboutView: View {
                             .stroke(.white.opacity(0.10), lineWidth: 1)
                     }
 
-                    Text("Core Motion is not exposed for MacBook accelerometer access on macOS. SlamDih reads the built-in Apple SPU HID stream locally; motion data is not stored or uploaded.")
+                    Text("Core Motion is not exposed for MacBook accelerometer access on macOS. SlamX reads the built-in Apple SPU HID stream locally; motion data is not stored or uploaded.")
                         .font(.body)
                         .foregroundStyle(.white.opacity(0.66))
                         .fixedSize(horizontal: false, vertical: true)

@@ -14,5 +14,5 @@
 - If a file has concurrent changes that affect the current task, pause and coordinate instead of forcing a rewrite.
 
 ## Product Direction
-- SlamDih is sensor-only. Do not reintroduce microphone detection, microphone permissions, microphone fallback UI, or microphone fallback onboarding.
+- SlamX is sensor-only. Do not reintroduce microphone detection, microphone permissions, microphone fallback UI, or microphone fallback onboarding.
 - Unsupported Mac means unsupported live detection.

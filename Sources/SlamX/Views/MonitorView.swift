@@ -70,7 +70,7 @@ struct MonitorView: View {
     private var header: some View {
         HStack(alignment: .center) {
             VStack(alignment: .leading, spacing: 8) {
-                Text("SlamDih")
+                Text("SlamX")
                     .font(.system(size: 44, weight: .bold, design: .rounded))
                 Text(monitor.lastEventDescription)
                     .font(.headline)
@@ -458,7 +458,7 @@ private struct CustomAudioDisclaimerSheet: View {
                     .font(.title3.weight(.bold))
             }
 
-            Text("SlamDih copies imported MP3 files into local app storage. Very long files can delay playback the first time they are loaded.")
+            Text("SlamX copies imported MP3 files into local app storage. Very long files can delay playback the first time they are loaded.")
                 .foregroundStyle(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
 
