@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct AboutView: View {
+    let updateController: UpdateController
     let resetOnboarding: () -> Void
 
     var body: some View {
@@ -25,6 +26,17 @@ struct AboutView: View {
                         AboutRow(title: "Target", value: "macOS 14+")
                         AboutRow(title: "Author", value: "Johannes Grof (MIT)")
                         AboutRow(title: "Repository", value: "https://github.com/jx-grxf/SlamDih")
+
+                        Button {
+                            updateController.checkForUpdates()
+                        } label: {
+                            Label("Check for Updates...", systemImage: "arrow.triangle.2.circlepath")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.large)
+                        .disabled(updateController.isCheckingForUpdates)
+                        .help("Check for SlamDih updates")
                     }
                     .font(.title3)
                     .padding(18)

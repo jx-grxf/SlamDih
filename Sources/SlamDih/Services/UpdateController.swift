@@ -27,6 +27,10 @@ final class UpdateController {
 
     private(set) var status: Status = .idle
 
+    var isCheckingForUpdates: Bool {
+        status == .checking
+    }
+
     var menuItemTitle: String? {
         switch status {
         case .idle:
@@ -87,14 +91,14 @@ final class UpdateController {
         updaterController.checkForUpdates(nil)
     }
 
-    func refreshUpdateStatusIfNeeded() {
+    func checkForUpdatesOnLaunchIfNeeded() {
         guard !hasRequestedInitialCheck else {
             return
         }
 
         hasRequestedInitialCheck = true
         status = .checking
-        updaterController.updater.checkForUpdateInformation()
+        updaterController.updater.checkForUpdatesInBackground()
     }
 
     func showUpdateDetails() {

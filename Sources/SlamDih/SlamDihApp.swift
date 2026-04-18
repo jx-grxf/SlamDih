@@ -14,7 +14,7 @@ struct SlamDihApp: App {
         WindowGroup("SlamDih", id: "main") {
             Group {
                 if hasCompletedOnboarding {
-                    ContentView(monitor: monitor) {
+                    ContentView(monitor: monitor, updateController: updateController) {
                         resetOnboarding()
                     }
                     .frame(minWidth: 920, minHeight: 620)
@@ -30,7 +30,7 @@ struct SlamDihApp: App {
                 hotKeyController.register {
                     monitor.toggleMute()
                 }
-                updateController.refreshUpdateStatusIfNeeded()
+                updateController.checkForUpdatesOnLaunchIfNeeded()
             }
         }
         .commands {

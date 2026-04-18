@@ -21,6 +21,7 @@ enum AppSection: String, CaseIterable, Identifiable {
 
 struct ContentView: View {
     @Bindable var monitor: SlapMonitor
+    let updateController: UpdateController
     let resetOnboarding: () -> Void
 
     @State private var selection: AppSection? = .monitor
@@ -69,7 +70,7 @@ struct ContentView: View {
         case .calibration:
             CalibrationView(monitor: monitor)
         case .about:
-            AboutView(resetOnboarding: resetOnboarding)
+            AboutView(updateController: updateController, resetOnboarding: resetOnboarding)
         }
     }
 }
