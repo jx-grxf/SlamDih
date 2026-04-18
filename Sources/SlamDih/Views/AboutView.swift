@@ -19,6 +19,7 @@ struct AboutView: View {
                     }
 
                     VStack(alignment: .leading, spacing: 14) {
+                        AboutRow(title: "Version", value: Bundle.main.appVersionSummary)
                         AboutRow(title: "Sensor", value: "Apple SPU Accelerometer")
                         AboutRow(title: "Backend", value: "IOKit HID / AppleSPU")
                         AboutRow(title: "Target", value: "macOS 14+")
@@ -64,6 +65,24 @@ private struct AboutRow: View {
 
             Text(value)
                 .foregroundStyle(.white.opacity(0.86))
+        }
+    }
+}
+
+private extension Bundle {
+    var appVersionSummary: String {
+        let shortVersion = object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+        let buildNumber = object(forInfoDictionaryKey: "CFBundleVersion") as? String
+
+        switch (shortVersion?.isEmpty == false ? shortVersion : nil, buildNumber?.isEmpty == false ? buildNumber : nil) {
+        case let (version?, build?):
+            return "\(version) (\(build))"
+        case let (version?, nil):
+            return version
+        case let (nil, build?):
+            return "Build \(build)"
+        case (nil, nil):
+            return "Development"
         }
     }
 }
