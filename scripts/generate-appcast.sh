@@ -6,9 +6,13 @@ UPDATES_DIR="${1:-$ROOT_DIR/.build/dmg}"
 SPARKLE_TOOLS_DIR="$ROOT_DIR/.build/artifacts/sparkle/Sparkle/bin"
 GENERATE_APPCAST="$SPARKLE_TOOLS_DIR/generate_appcast"
 APPCAST_ARGS=(--embed-release-notes)
+DOWNLOAD_URL_PREFIX="${APPCAST_DOWNLOAD_URL_PREFIX:-}"
 
-if [[ -n "${APPCAST_DOWNLOAD_URL_PREFIX:-}" ]]; then
-  APPCAST_ARGS+=(--download-url-prefix "$APPCAST_DOWNLOAD_URL_PREFIX")
+if [[ -n "$DOWNLOAD_URL_PREFIX" ]]; then
+  if [[ "$DOWNLOAD_URL_PREFIX" != */ ]]; then
+    DOWNLOAD_URL_PREFIX="$DOWNLOAD_URL_PREFIX/"
+  fi
+  APPCAST_ARGS+=(--download-url-prefix "$DOWNLOAD_URL_PREFIX")
 fi
 
 if [[ ! -x "$GENERATE_APPCAST" ]]; then
