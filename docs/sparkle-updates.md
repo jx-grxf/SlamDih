@@ -10,10 +10,18 @@ SlamDih uses Sparkle 2 for in-app updates.
 
 ## Release Flow
 
+Build a local `.app` bundle through the Xcode project:
+
+```bash
+./scripts/package-app.sh 0.2.0 2
+```
+
+This is the source of truth for packaging. Do not build the release app by manually copying the SwiftPM executable into an `.app` bundle; Sparkle and embedded frameworks need Xcode's app bundle layout.
+
 Build the DMG:
 
 ```bash
-./scripts/create-dmg.sh 0.2.0
+./scripts/create-dmg.sh 0.2.0 2
 ```
 
 Generate the appcast:
@@ -46,6 +54,12 @@ https://github.com/jx-grxf/SlamDih/releases/latest/download/appcast.xml
 ## Testing
 
 Sparkle only sees an update if the published `sparkle:version` is higher than the installed app's `CFBundleVersion`.
+For example, if the installed local app is `0.2.0` build `2`, publish the test update as `0.2.1` build `3`:
+
+```bash
+./scripts/create-dmg.sh 0.2.1 3
+./scripts/generate-appcast.sh .build/dmg
+```
 
 To force an immediate check during local testing:
 

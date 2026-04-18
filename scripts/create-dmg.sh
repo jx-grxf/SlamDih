@@ -4,6 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 APP_NAME="SlamDih"
 VERSION="${1:-0.2.0}"
+BUILD_NUMBER="${2:-${BUILD_NUMBER:-2}}"
 BUILD_ROOT="$ROOT_DIR/.build/xcode-release"
 DMG_ROOT="$ROOT_DIR/.build/dmg"
 APP_PATH="$BUILD_ROOT/Release/$APP_NAME.app"
@@ -15,25 +16,10 @@ if [[ -z "${DEVELOPER_DIR:-}" && -d /Applications/Xcode.app/Contents/Developer ]
   export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
 fi
 
-rm -rf "$BUILD_ROOT" "$DMG_ROOT"
+rm -rf "$DMG_ROOT"
 mkdir -p "$DMG_ROOT"
 
-xcodebuild \
-  -project "$ROOT_DIR/SlamDih.xcodeproj" \
-  -scheme "$APP_NAME" \
-  -configuration Release \
-  -destination 'platform=macOS' \
-  SYMROOT="$BUILD_ROOT" \
-  CODE_SIGNING_ALLOWED=NO \
-  build
-
-if [[ ! -d "$APP_PATH" ]]; then
-  echo "Expected app bundle not found at $APP_PATH" >&2
-  exit 1
-fi
-
-codesign --force --deep --sign - "$APP_PATH"
-codesign --verify --deep --strict "$APP_PATH"
+BUILD_ROOT="$BUILD_ROOT" "$ROOT_DIR/scripts/package-app.sh" "$VERSION" "$BUILD_NUMBER"
 
 rm -f "$CREATE_DMG_OUTPUT" "$DMG_PATH"
 npx --yes "$CREATE_DMG_PACKAGE" "$APP_PATH" "$DMG_ROOT" \
