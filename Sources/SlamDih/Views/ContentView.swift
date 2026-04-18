@@ -21,11 +21,8 @@ enum AppSection: String, CaseIterable, Identifiable {
 
 struct ContentView: View {
     @Bindable var monitor: SlapMonitor
-    let resetOnboarding: () -> Void
 
     @State private var selection: AppSection? = .monitor
-    @State private var aboutClickCount = 0
-    @State private var lastAboutClickTime = Date.distantPast
 
     var body: some View {
         NavigationSplitView {
@@ -46,12 +43,9 @@ struct ContentView: View {
         }
         .navigationSplitViewStyle(.balanced)
         .onChange(of: selection) { _, newSelection in
-            guard let newSelection else {
+            if newSelection == nil {
                 selection = .monitor
-                return
             }
-
-            handleSelection(newSelection)
         }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -76,24 +70,6 @@ struct ContentView: View {
         case .about:
             AboutView()
         }
-    }
-
-    private func handleSelection(_ section: AppSection) {
-        guard section == .about else {
-            aboutClickCount = 0
-            return
-        }
-
-        let now = Date()
-        aboutClickCount = now.timeIntervalSince(lastAboutClickTime) < 1.2 ? aboutClickCount + 1 : 1
-        lastAboutClickTime = now
-
-        guard aboutClickCount >= 3 else {
-            return
-        }
-
-        aboutClickCount = 0
-        resetOnboarding()
     }
 }
 

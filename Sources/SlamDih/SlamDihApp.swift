@@ -14,9 +14,7 @@ struct SlamDihApp: App {
         WindowGroup("SlamDih", id: "main") {
             Group {
                 if hasCompletedOnboarding {
-                    ContentView(monitor: monitor) {
-                        resetOnboarding()
-                    }
+                    ContentView(monitor: monitor)
                     .frame(minWidth: 920, minHeight: 620)
                 } else {
                     OnboardingView(monitor: monitor) {
@@ -61,6 +59,10 @@ struct SlamDihApp: App {
                     monitor.resetCounter()
                 }
                 .keyboardShortcut("0", modifiers: [.command])
+
+                Button("Reset Onboarding") {
+                    resetOnboarding()
+                }
             }
         }
 
