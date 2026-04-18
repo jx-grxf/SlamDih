@@ -7,7 +7,6 @@ struct OnboardingView: View {
     @State private var didStartCheck = false
     @State private var scannerRotation = 0.0
     @State private var scannerPulse = false
-    @State private var hasAcceptedDamageDisclaimer = false
     @State private var isSoundTestActive = false
     @State private var hasCompletedSoundTest = false
     @State private var soundTestSlapBaseline = 0
@@ -59,10 +58,11 @@ struct OnboardingView: View {
 
                 Spacer(minLength: 30)
 
-                agreementSection
-                    .padding(.bottom, 12)
-
-                diagnosticsRow
+                ProgressStepsView(
+                    sensorAvailability: monitor.sensorAvailability,
+                    hasCompletedSoundTest: hasCompletedSoundTest,
+                    canStart: canStartApp
+                )
             }
             .padding(.horizontal, 48)
             .padding(.top, 38)
@@ -129,7 +129,7 @@ struct OnboardingView: View {
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
             .tint(.mint)
-            .disabled(!monitor.canMonitor || !hasCompletedSoundTest || !hasAcceptedDamageDisclaimer)
+            .disabled(!canStartApp)
 
             Button {
                 Task {
@@ -145,65 +145,8 @@ struct OnboardingView: View {
         }
     }
 
-    private var diagnosticsRow: some View {
-        HStack(spacing: 12) {
-            OnboardingStatusItem(
-                title: "Sensor",
-                value: monitor.sensorStatusTitle,
-                symbol: monitor.sensorAvailability.systemImage,
-                tint: sensorTint
-            )
-
-            OnboardingStatusItem(
-                title: "Audio",
-                value: monitor.soundStatus,
-                symbol: monitor.selectedSoundSymbol,
-                tint: .orange
-            )
-
-            OnboardingStatusItem(
-                title: "Sound Test",
-                value: soundTestStatusTitle,
-                symbol: soundTestSymbol,
-                tint: soundTestTint
-            )
-
-            OnboardingStatusItem(
-                title: "Engine",
-                value: "Local HID",
-                symbol: "memorychip",
-                tint: .cyan
-            )
-        }
-    }
-
-    private var damageDisclaimer: some View {
-        Toggle(isOn: $hasAcceptedDamageDisclaimer) {
-            HStack(alignment: .firstTextBaseline, spacing: 8) {
-                Text("Important legal-ish wisdom:")
-                    .font(.callout.weight(.bold))
-                    .foregroundStyle(.white)
-
-                Text("I accept that SlamDih is not a MacBook insurance policy and Johannes is not liable if I hit this thing like I am trying to mine diamonds.")
-                    .font(.callout.weight(.medium))
-                    .foregroundStyle(.white.opacity(0.72))
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        }
-        .toggleStyle(.checkbox)
-        .disabled(!hasCompletedSoundTest)
-        .opacity(hasCompletedSoundTest ? 1 : 0.58)
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .stroke(.mint.opacity(hasAcceptedDamageDisclaimer ? 0.46 : 0.18), lineWidth: 1)
-        }
-    }
-
-    private var agreementSection: some View {
-        damageDisclaimer
+    private var canStartApp: Bool {
+        monitor.canMonitor && hasCompletedSoundTest
     }
 
     private var title: String {
@@ -211,9 +154,9 @@ struct OnboardingView: View {
         case .checking:
             return "Checking accelerometer"
         case .detected where hasCompletedSoundTest:
-            return "Sound test passed"
+            return "Ready to monitor"
         case .detected:
-            return "Now slap your MacBook"
+            return "Verify detection"
         case .unsupported:
             return "This Mac is not supported"
         }
@@ -222,13 +165,13 @@ struct OnboardingView: View {
     private var description: String {
         switch monitor.sensorAvailability {
         case .checking:
-            return "SlamDih is checking the Apple SPU accelerometer required for live impact monitoring."
+            return "SlamDih is checking whether this Mac exposes the Apple SPU motion sensor."
         case .detected where hasCompletedSoundTest:
-            return "The test slap triggered \(monitor.selectedSoundTitle). You can accept the agreement and enter the app."
+            return "The local sensor and audio path are working. You can continue to the monitor."
         case .detected where isSoundTestActive:
-            return "SlamDih lowered the onboarding threshold to 0.05 g. Slap your MacBook once to verify the sound path."
+            return "Apply one light tap to verify that the sensor can detect a clear impact."
         case .detected:
-            return "Everything needed for live slap detection is available on this Mac. Preparing the sound test."
+            return "The motion sensor is available. SlamDih will run one quick local detection check."
         case .unsupported:
             return monitor.unsupportedSensorExplanation
         }
@@ -240,7 +183,7 @@ struct OnboardingView: View {
         }
 
         if isSoundTestActive {
-            return "Slap now"
+            return "Tap now"
         }
 
         return monitor.sensorAvailability == .checking ? "Waiting" : "Pending"
@@ -256,17 +199,6 @@ struct OnboardingView: View {
         }
 
         return isSoundTestActive ? .yellow : .white.opacity(0.56)
-    }
-
-    private var sensorTint: Color {
-        switch monitor.sensorAvailability {
-        case .checking:
-            return .cyan
-        case .detected:
-            return .mint
-        case .unsupported:
-            return .red
-        }
     }
 
     private func runAvailabilityCheck() async {
@@ -313,14 +245,12 @@ struct OnboardingView: View {
 
     private func enableUnsupportedTestMode() {
         stopSoundTestIfNeeded()
-        hasAcceptedDamageDisclaimer = false
         hasCompletedSoundTest = false
         monitor.isSensorUnsupportedTestMode = true
         showsUnsupportedTestModeNotice = true
     }
 
     private func resetOnboardingGate() {
-        hasAcceptedDamageDisclaimer = false
         hasCompletedSoundTest = false
         stopSoundTestIfNeeded()
     }
@@ -527,7 +457,70 @@ private struct SensorScannerView: View {
     }
 }
 
-private struct OnboardingStatusItem: View {
+private struct ProgressStepsView: View {
+    let sensorAvailability: SensorAvailability
+    let hasCompletedSoundTest: Bool
+    let canStart: Bool
+
+    var body: some View {
+        HStack(spacing: 12) {
+            OnboardingStepItem(
+                title: "Sensor",
+                value: sensorStatus,
+                symbol: sensorSymbol,
+                tint: sensorTint
+            )
+
+            OnboardingStepItem(
+                title: "Detection",
+                value: hasCompletedSoundTest ? "Verified" : "Pending",
+                symbol: hasCompletedSoundTest ? "checkmark.circle.fill" : "hand.tap.fill",
+                tint: hasCompletedSoundTest ? .mint : .white.opacity(0.56)
+            )
+
+            OnboardingStepItem(
+                title: "Ready",
+                value: canStart ? "Continue" : "Waiting",
+                symbol: canStart ? "arrow.right.circle.fill" : "clock.fill",
+                tint: canStart ? .mint : .white.opacity(0.56)
+            )
+        }
+        .padding(12)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(.white.opacity(0.09), lineWidth: 1)
+        }
+    }
+
+    private var sensorStatus: String {
+        switch sensorAvailability {
+        case .checking:
+            "Checking"
+        case .detected:
+            "Available"
+        case .unsupported:
+            "Unavailable"
+        }
+    }
+
+    private var sensorSymbol: String {
+        sensorAvailability.systemImage
+    }
+
+    private var sensorTint: Color {
+        switch sensorAvailability {
+        case .checking:
+            return .cyan
+        case .detected:
+            return .mint
+        case .unsupported:
+            return .red
+        }
+    }
+}
+
+private struct OnboardingStepItem: View {
     let title: String
     let value: String
     let symbol: String
@@ -553,13 +546,7 @@ private struct OnboardingStatusItem: View {
 
             Spacer(minLength: 0)
         }
-        .padding(.horizontal, 14)
-        .frame(maxWidth: .infinity, minHeight: 70, alignment: .leading)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .stroke(.white.opacity(0.09), lineWidth: 1)
-        }
+        .frame(maxWidth: .infinity, minHeight: 54, alignment: .leading)
     }
 }
 

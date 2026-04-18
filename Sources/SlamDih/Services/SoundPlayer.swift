@@ -13,34 +13,34 @@ enum SlapSound: String, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .slap:
-            "Slap"
+            "Impact"
         case .fart:
-            "Fart"
+            "Air Pop"
         case .sexy:
-            "Sexy"
+            "Spotlight"
         case .yowch:
-            "Yowch"
+            "Alert"
         case .whip:
-            "Whip"
+            "Snap"
         }
     }
 
-    var isNSFW: Bool {
+    var isBonus: Bool {
         self == .sexy
     }
 
     var resourceName: String {
         switch self {
         case .slap:
-            "SlapSoundEffect"
+            "ImpactSoundEffect"
         case .fart:
-            "FartSoundEffect"
+            "AirPopSoundEffect"
         case .sexy:
-            "SexySoundEffect"
+            "SpotlightSoundEffect"
         case .yowch:
-            "YowchSoundEffect"
+            "AlertSoundEffect"
         case .whip:
-            "WhipSoundEffect"
+            "SnapSoundEffect"
         }
     }
 
@@ -59,8 +59,8 @@ enum SlapSound: String, CaseIterable, Identifiable {
         }
     }
 
-    static func availableSounds(includeNSFW: Bool) -> [SlapSound] {
-        allCases.filter { includeNSFW || !$0.isNSFW }
+    static func availableSounds(includeBonus: Bool) -> [SlapSound] {
+        allCases.filter { includeBonus || !$0.isBonus }
     }
 }
 

@@ -52,7 +52,7 @@ final class SlapMonitor {
     static let thresholdStep = 0.05
 
     private enum PreferenceKey {
-        static let nsfwSoundsEnabled = "nsfwSoundsEnabled"
+        static let bonusSoundsEnabled = "bonusSoundsEnabled"
         static let selectedSound = "selectedSound"
         static let selectedCustomSound = "selectedCustomSound"
         static let customAudioDisclaimerAccepted = "customAudioDisclaimerAccepted"
@@ -86,20 +86,20 @@ final class SlapMonitor {
     var peakImpact = 0.0
     var samplesPerSecond = 0
     var rawReport = ""
-    var lastEventDescription = "No slap detected yet"
-    var isNSFWSoundsEnabled = false {
+    var lastEventDescription = "No impact detected yet"
+    var isBonusSoundsEnabled = false {
         didSet {
-            userDefaults.set(isNSFWSoundsEnabled, forKey: PreferenceKey.nsfwSoundsEnabled)
+            userDefaults.set(isBonusSoundsEnabled, forKey: PreferenceKey.bonusSoundsEnabled)
 
-            if !isNSFWSoundsEnabled && selectedSound.isNSFW {
+            if !isBonusSoundsEnabled && selectedSound.isBonus {
                 selectedSound = .whip
             }
         }
     }
     var selectedSound: SlapSound = .whip {
         didSet {
-            if selectedSound.isNSFW && !isNSFWSoundsEnabled {
-                selectedSound = oldValue.isNSFW ? .whip : oldValue
+            if selectedSound.isBonus && !isBonusSoundsEnabled {
+                selectedSound = oldValue.isBonus ? .whip : oldValue
                 return
             }
 
@@ -131,12 +131,12 @@ final class SlapMonitor {
 
     init(userDefaults: UserDefaults = .standard) {
         self.userDefaults = userDefaults
-        isNSFWSoundsEnabled = userDefaults.bool(forKey: PreferenceKey.nsfwSoundsEnabled)
+        isBonusSoundsEnabled = userDefaults.bool(forKey: PreferenceKey.bonusSoundsEnabled)
         hasAcceptedCustomAudioDisclaimer = userDefaults.bool(forKey: PreferenceKey.customAudioDisclaimerAccepted)
 
         if let storedSound = userDefaults.string(forKey: PreferenceKey.selectedSound),
            let sound = SlapSound(rawValue: storedSound),
-           isNSFWSoundsEnabled || !sound.isNSFW {
+           isBonusSoundsEnabled || !sound.isBonus {
             selectedSound = sound
         }
 
@@ -149,7 +149,7 @@ final class SlapMonitor {
     }
 
     var availableSounds: [SlapSound] {
-        SlapSound.availableSounds(includeNSFW: isNSFWSoundsEnabled)
+        SlapSound.availableSounds(includeBonus: isBonusSoundsEnabled)
     }
 
     var soundStatus: String {

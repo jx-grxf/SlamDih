@@ -63,7 +63,7 @@ struct CalibrationView: View {
 
             HStack(spacing: 12) {
                 PeakReadout(title: "Desk peak", value: baselinePeak, tint: .orange)
-                PeakReadout(title: "Light slap", value: lightSlapPeak, tint: .mint)
+                PeakReadout(title: "Light tap", value: lightSlapPeak, tint: .mint)
                 PeakReadout(title: "Threshold", value: monitor.threshold, tint: .cyan)
             }
 
@@ -161,7 +161,7 @@ struct CalibrationView: View {
             }
 
             phase = .lightSlap
-            monitor.status = "Calibration: light slap"
+            monitor.status = "Calibration: light tap"
             try? await Task.sleep(for: .seconds(4))
             guard !Task.isCancelled else {
                 return
@@ -239,11 +239,11 @@ private enum CalibrationPhase {
     var instruction: String {
         switch self {
         case .idle:
-            "Run the wizard to measure desk noise first, then a light MacBook slap."
+            "Run the wizard to measure desk noise first, then a light MacBook tap."
         case .deskTap:
             "Tap the desk firmly once, away from the MacBook."
         case .lightSlap:
-            "Now give the MacBook one light slap."
+            "Now apply one light tap to the MacBook."
         case .finished:
             "Threshold updated from the measured peaks. Fine-tune with the slider if needed."
         }

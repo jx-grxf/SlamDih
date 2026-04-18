@@ -32,7 +32,6 @@ struct SlamDihApp: App {
                 }
             }
         }
-        .windowStyle(.hiddenTitleBar)
         .commands {
             CommandMenu("SlamDih") {
                 Button(monitor.monitoringActionTitle) {
@@ -41,7 +40,7 @@ struct SlamDihApp: App {
                 .keyboardShortcut("r", modifiers: [.command])
                 .disabled(!monitor.canMonitor && !monitor.isMonitoring)
 
-                Button("Test Slap Sound") {
+                Button("Test Sound") {
                     monitor.playTestSound()
                 }
                 .keyboardShortcut("t", modifiers: [.command])
@@ -173,7 +172,7 @@ private struct MenuBarPanel: View {
         Button {
             monitor.playTestSound()
         } label: {
-            Label("Test Slap Sound", systemImage: "speaker.wave.2.fill")
+            Label("Test Sound", systemImage: "speaker.wave.2.fill")
         }
 
         Button {
@@ -190,7 +189,7 @@ private struct MenuBarPanel: View {
 
         Divider()
 
-        MenuBarStatButton(title: "Slaps", value: "\(monitor.slapCount)", symbol: "hand.raised.fill")
+        MenuBarStatButton(title: "Events", value: "\(monitor.slapCount)", symbol: "hand.raised.fill")
         MenuBarStatButton(title: "Peak", value: "\(monitor.peakImpact.formatted(.number.precision(.fractionLength(2)))) g", symbol: "chart.line.uptrend.xyaxis")
         MenuBarStatButton(title: "Impact", value: "\(monitor.currentImpact.formatted(.number.precision(.fractionLength(2)))) g", symbol: "bolt.fill")
         MenuBarStatButton(title: "Rate", value: "\(monitor.samplesPerSecond) Hz", symbol: "speedometer")

@@ -63,7 +63,7 @@ struct SettingsView: View {
                     .font(.callout)
                     .foregroundStyle(.secondary)
 
-                Toggle("Activate NSFW Sounds", isOn: $monitor.isNSFWSoundsEnabled)
+                Toggle("Show Bonus Sounds", isOn: $monitor.isBonusSoundsEnabled)
                     .toggleStyle(.switch)
             }
         }

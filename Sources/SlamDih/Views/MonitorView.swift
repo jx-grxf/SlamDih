@@ -4,6 +4,8 @@ import UniformTypeIdentifiers
 struct MonitorView: View {
     @Bindable var monitor: SlapMonitor
 
+    @State private var isAdvancedTelemetryExpanded = false
+
     var body: some View {
         ZStack {
             LinearGradient(
@@ -22,18 +24,18 @@ struct MonitorView: View {
                     header
 
                     HStack(spacing: 14) {
-                        MetricTile(title: "Slaps", value: "\(monitor.slapCount)", symbol: "hand.raised.fill", tint: .mint)
-                        MetricTile(title: "Impact", value: monitor.currentImpact.formatted(.number.precision(.fractionLength(2))), symbol: "bolt.fill", tint: .yellow)
+                        MetricTile(title: "Events", value: "\(monitor.slapCount)", symbol: "hand.raised.fill", tint: .mint)
+                        MetricTile(title: "Current", value: monitor.currentImpact.formatted(.number.precision(.fractionLength(2))), symbol: "bolt.fill", tint: .yellow)
                         MetricTile(title: "Peak", value: monitor.peakImpact.formatted(.number.precision(.fractionLength(2))), symbol: "chart.line.uptrend.xyaxis", tint: .orange)
-                        MetricTile(title: "Hz", value: "\(monitor.samplesPerSecond)", symbol: "speedometer", tint: .cyan)
+                        MetricTile(title: "Rate", value: "\(monitor.samplesPerSecond) Hz", symbol: "speedometer", tint: .cyan)
                     }
 
-                    HStack(alignment: .top, spacing: 14) {
-                        SensorPanel(monitor: monitor)
-                        ControlPanel(monitor: monitor)
-                    }
+                    ControlPanel(monitor: monitor)
 
-                    RawReportPanel(rawReport: monitor.rawReport)
+                    AdvancedTelemetryPanel(
+                        monitor: monitor,
+                        isExpanded: $isAdvancedTelemetryExpanded
+                    )
                 }
                 .padding(28)
             }
@@ -53,7 +55,7 @@ struct MonitorView: View {
                 } label: {
                     Image(systemName: "speaker.wave.2.fill")
                 }
-                .help("Test slap sound")
+                .help("Test sound")
 
                 Button {
                     monitor.toggleMute()
@@ -82,6 +84,48 @@ struct MonitorView: View {
                 StatusPill(isActive: monitor.isMonitoring, text: monitor.status)
             }
         }
+    }
+}
+
+private struct AdvancedTelemetryPanel: View {
+    @Bindable var monitor: SlapMonitor
+    @Binding var isExpanded: Bool
+
+    var body: some View {
+        DisclosureGroup(isExpanded: $isExpanded) {
+            VStack(alignment: .leading, spacing: 18) {
+                HStack(alignment: .top, spacing: 24) {
+                    VStack(alignment: .leading, spacing: 16) {
+                        AxisMeter(label: "X", value: monitor.xAxis, tint: .red)
+                        AxisMeter(label: "Y", value: monitor.yAxis, tint: .green)
+                        AxisMeter(label: "Z", value: monitor.zAxis, tint: .blue)
+
+                        HStack {
+                            Text("Magnitude")
+                                .foregroundStyle(.white.opacity(0.62))
+                            Spacer()
+                            Text("\(monitor.magnitude, specifier: "%.3f") g")
+                                .font(.system(.body, design: .monospaced).weight(.semibold))
+                        }
+                    }
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        Label("Raw HID Report", systemImage: "memorychip")
+                            .font(.headline)
+                        Text(monitor.rawReport.isEmpty ? "Waiting for data" : monitor.rawReport)
+                            .font(.system(.callout, design: .monospaced))
+                            .foregroundStyle(.white.opacity(0.66))
+                            .textSelection(.enabled)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                }
+                .padding(.top, 12)
+            }
+        } label: {
+            PanelHeader(title: "Advanced Telemetry", symbol: "waveform.path.ecg.rectangle")
+        }
+        .tint(.white.opacity(0.84))
+        .panelStyle()
     }
 }
 
@@ -117,31 +161,6 @@ struct MetricTile: View {
             RoundedRectangle(cornerRadius: 8, style: .continuous)
                 .stroke(.white.opacity(0.08), lineWidth: 1)
         }
-    }
-}
-
-struct SensorPanel: View {
-    @Bindable var monitor: SlapMonitor
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 18) {
-            PanelHeader(title: "Sensor Values", symbol: "gyroscope")
-
-            AxisMeter(label: "X", value: monitor.xAxis, tint: .red)
-            AxisMeter(label: "Y", value: monitor.yAxis, tint: .green)
-            AxisMeter(label: "Z", value: monitor.zAxis, tint: .blue)
-
-            Divider().overlay(.white.opacity(0.12))
-
-            HStack {
-                Text("Magnitude")
-                    .foregroundStyle(.white.opacity(0.62))
-                Spacer()
-                Text("\(monitor.magnitude, specifier: "%.3f") g")
-                    .font(.system(.body, design: .monospaced).weight(.semibold))
-            }
-        }
-        .panelStyle()
     }
 }
 
@@ -462,22 +481,6 @@ private struct CustomAudioDisclaimerSheet: View {
         }
         .padding(24)
         .frame(width: 420)
-    }
-}
-
-struct RawReportPanel: View {
-    let rawReport: String
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            PanelHeader(title: "Raw HID Report", symbol: "memorychip")
-            Text(rawReport.isEmpty ? "Waiting for data" : rawReport)
-                .font(.system(.callout, design: .monospaced))
-                .foregroundStyle(.white.opacity(0.66))
-                .textSelection(.enabled)
-                .frame(maxWidth: .infinity, alignment: .leading)
-        }
-        .panelStyle()
     }
 }
 

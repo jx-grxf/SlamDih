@@ -7,7 +7,7 @@ struct AboutView: View {
                 Text("About")
                     .font(.system(size: 38, weight: .bold, design: .rounded))
 
-                Text("Local MacBook impact detector")
+                Text("Local MacBook motion utility")
                     .font(.headline)
                     .foregroundStyle(.white.opacity(0.68))
             }
@@ -27,7 +27,7 @@ struct AboutView: View {
                     .stroke(.white.opacity(0.10), lineWidth: 1)
             }
 
-            Text("Core Motion is not exposed for MacBook accelerometer access on macOS. SlamDih reads the built-in Apple SPU HID stream and keeps all processing local.")
+            Text("Core Motion is not exposed for MacBook accelerometer access on macOS. SlamDih reads the built-in Apple SPU HID stream locally; motion data is not stored or uploaded.")
                 .font(.body)
                 .foregroundStyle(.white.opacity(0.66))
                 .fixedSize(horizontal: false, vertical: true)
