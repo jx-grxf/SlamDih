@@ -170,10 +170,6 @@ private struct SidebarStatusView: View {
     }
 
     private var sensorTint: Color {
-        if monitor.detectionInputMode == .microphone {
-            return .yellow
-        }
-
         switch monitor.sensorAvailability {
         case .checking:
             return .cyan
@@ -185,6 +181,6 @@ private struct SidebarStatusView: View {
     }
 
     private var sensorSymbol: String {
-        monitor.detectionInputMode == .microphone ? monitor.detectionInputMode.symbol : monitor.sensorAvailability.systemImage
+        monitor.sensorAvailability.systemImage
     }
 }

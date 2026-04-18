@@ -50,7 +50,6 @@ struct OnboardingView: View {
 
                     SensorScannerView(
                         availability: monitor.sensorAvailability,
-                        detectionInputMode: monitor.detectionInputMode,
                         isSoundTestActive: isSoundTestActive,
                         hasCompletedSoundTest: hasCompletedSoundTest,
                         rotation: scannerRotation,
@@ -88,7 +87,7 @@ struct OnboardingView: View {
         .alert("Unsupported-device test mode", isPresented: $showsUnsupportedTestModeNotice) {
             Button("OK", role: .cancel) { }
         } message: {
-            Text("SlamDih is now simulating a Mac without the Apple SPU accelerometer. This is only for testing the fallback onboarding flow; it does not mean this Mac is actually unsupported.")
+            Text("SlamDih is now simulating a Mac without the Apple SPU accelerometer. This is only for testing the unsupported-device flow; it does not mean this Mac is actually unsupported.")
         }
         .onChange(of: monitor.slapCount) { _, newValue in
             guard isSoundTestActive, !hasCompletedSoundTest, newValue > soundTestSlapBaseline else {
@@ -114,41 +113,23 @@ struct OnboardingView: View {
 
             Spacer()
 
-            SensorHealthBadge(
-                availability: monitor.sensorAvailability,
-                inputMode: monitor.detectionInputMode
-            )
+            SensorHealthBadge(availability: monitor.sensorAvailability)
         }
     }
 
     private var actionRow: some View {
         HStack(spacing: 12) {
-            if shouldShowMicrophoneFallbackAgreement {
-                Button {
-                    Task {
-                        await enableMicrophoneFallback()
-                    }
-                } label: {
-                    Label("Use Microphone Fallback", systemImage: "mic.fill")
-                        .frame(width: 230)
-                }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
-                .tint(.yellow)
-                .disabled(!monitor.hasAcceptedMicrophoneFallbackRequirements)
-            } else {
-                Button {
-                    finishOnboarding()
-                    startApp()
-                } label: {
-                    Label("Start using SlamDih", systemImage: "arrow.right.circle.fill")
-                        .frame(width: 230)
-                }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
-                .tint(.mint)
-                .disabled(!monitor.canMonitor || !hasCompletedSoundTest || !hasAcceptedDamageDisclaimer)
+            Button {
+                finishOnboarding()
+                startApp()
+            } label: {
+                Label("Start using SlamDih", systemImage: "arrow.right.circle.fill")
+                    .frame(width: 230)
             }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.large)
+            .tint(.mint)
+            .disabled(!monitor.canMonitor || !hasCompletedSoundTest || !hasAcceptedDamageDisclaimer)
 
             Button {
                 Task {
@@ -169,7 +150,7 @@ struct OnboardingView: View {
             OnboardingStatusItem(
                 title: "Sensor",
                 value: monitor.sensorStatusTitle,
-                symbol: monitor.detectionInputMode == .microphone ? monitor.detectionInputMode.symbol : monitor.sensorAvailability.systemImage,
+                symbol: monitor.sensorAvailability.systemImage,
                 tint: sensorTint
             )
 
@@ -221,69 +202,11 @@ struct OnboardingView: View {
         }
     }
 
-    @ViewBuilder
     private var agreementSection: some View {
-        if shouldShowMicrophoneFallbackAgreement {
-            microphoneFallbackAgreement
-        } else {
-            damageDisclaimer
-        }
-    }
-
-    private var microphoneFallbackAgreement: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Label("Microphone fallback is not recommended", systemImage: "exclamationmark.triangle.fill")
-                .font(.callout.weight(.bold))
-                .foregroundStyle(.yellow)
-
-            microphoneAgreementToggle(
-                "I understand this mode is less accurate and can trigger on speech, loud noises, desk bumps, or other sharp sounds.",
-                isOn: $monitor.hasAcceptedMicrophoneAccuracyWarning
-            )
-
-            microphoneAgreementToggle(
-                "I understand SlamDih needs microphone access, but all analysis stays on this Mac; no audio is recorded, saved, uploaded, or shared.",
-                isOn: $monitor.hasAcceptedMicrophonePrivacyNotice
-            )
-
-            microphoneAgreementToggle(
-                "I understand microphone listening can use more battery than the accelerometer mode.",
-                isOn: $monitor.hasAcceptedMicrophoneBatteryWarning
-            )
-
-            microphoneAgreementToggle(
-                "I understand this fallback exists only for unsupported Macs and the Apple SPU accelerometer mode is still recommended.",
-                isOn: $monitor.hasAcceptedMicrophoneNotRecommendedWarning
-            )
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 12)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .stroke(.yellow.opacity(monitor.hasAcceptedMicrophoneFallbackRequirements ? 0.44 : 0.2), lineWidth: 1)
-        }
-    }
-
-    private func microphoneAgreementToggle(_ title: String, isOn: Binding<Bool>) -> some View {
-        Toggle(isOn: isOn) {
-            Text(title)
-                .font(.callout.weight(.medium))
-                .foregroundStyle(.white.opacity(0.76))
-                .fixedSize(horizontal: false, vertical: true)
-        }
-        .toggleStyle(.checkbox)
+        damageDisclaimer
     }
 
     private var title: String {
-        if monitor.detectionInputMode == .microphone {
-            if hasCompletedSoundTest {
-                return "Microphone test passed"
-            }
-
-            return isSoundTestActive ? "Now slap near your MacBook" : "Microphone fallback ready"
-        }
-
         switch monitor.sensorAvailability {
         case .checking:
             return "Checking accelerometer"
@@ -297,14 +220,6 @@ struct OnboardingView: View {
     }
 
     private var description: String {
-        if monitor.detectionInputMode == .microphone {
-            if hasCompletedSoundTest {
-                return "The fallback heard a sharp impact and triggered \(monitor.selectedSoundTitle). You can accept the agreement and enter the app."
-            }
-
-            return "SlamDih will listen locally for sharp impact-like microphone peaks. This can still trigger on speech or loud noises and is not recommended."
-        }
-
         switch monitor.sensorAvailability {
         case .checking:
             return "SlamDih is checking the Apple SPU accelerometer required for live impact monitoring."
@@ -315,7 +230,7 @@ struct OnboardingView: View {
         case .detected:
             return "Everything needed for live slap detection is available on this Mac. Preparing the sound test."
         case .unsupported:
-            return "\(monitor.unsupportedSensorExplanation) You can use the microphone fallback instead, but it is not recommended and needs explicit privacy, accuracy, and battery acknowledgements."
+            return monitor.unsupportedSensorExplanation
         }
     }
 
@@ -344,10 +259,6 @@ struct OnboardingView: View {
     }
 
     private var sensorTint: Color {
-        if monitor.detectionInputMode == .microphone {
-            return .yellow
-        }
-
         switch monitor.sensorAvailability {
         case .checking:
             return .cyan
@@ -358,16 +269,9 @@ struct OnboardingView: View {
         }
     }
 
-    private var shouldShowMicrophoneFallbackAgreement: Bool {
-        monitor.detectionInputMode == .accelerometer && monitor.sensorAvailability == .unsupported
-    }
-
     private func runAvailabilityCheck() async {
         resetOnboardingGate()
-
-        if monitor.detectionInputMode == .accelerometer {
-            await monitor.checkSensorAvailability()
-        }
+        await monitor.checkSensorAvailability()
 
         await startSoundTestIfPossible()
     }
@@ -378,11 +282,8 @@ struct OnboardingView: View {
         }
 
         scannerPulse = true
-
-        if monitor.detectionInputMode == .accelerometer {
-            thresholdBeforeSoundTest = monitor.threshold
-            monitor.threshold = SlapMonitor.thresholdRange.lowerBound
-        }
+        thresholdBeforeSoundTest = monitor.threshold
+        monitor.threshold = SlapMonitor.thresholdRange.lowerBound
 
         soundTestSlapBaseline = monitor.slapCount
         isSoundTestActive = true
@@ -410,16 +311,10 @@ struct OnboardingView: View {
         }
     }
 
-    private func enableMicrophoneFallback() async {
-        monitor.detectionInputMode = .microphone
-        await startSoundTestIfPossible()
-    }
-
     private func enableUnsupportedTestMode() {
         stopSoundTestIfNeeded()
         hasAcceptedDamageDisclaimer = false
         hasCompletedSoundTest = false
-        monitor.detectionInputMode = .accelerometer
         monitor.isSensorUnsupportedTestMode = true
         showsUnsupportedTestModeNotice = true
     }
@@ -456,7 +351,6 @@ struct OnboardingView: View {
 
 private struct SensorScannerView: View {
     let availability: SensorAvailability
-    let detectionInputMode: DetectionInputMode
     let isSoundTestActive: Bool
     let hasCompletedSoundTest: Bool
     let rotation: Double
@@ -523,8 +417,6 @@ private struct SensorScannerView: View {
     private var scannerTint: Color {
         if hasCompletedSoundTest {
             .mint
-        } else if detectionInputMode == .microphone {
-            .yellow
         } else if availability == .unsupported {
             .red
         } else {
@@ -535,8 +427,6 @@ private struct SensorScannerView: View {
     private var scannerSymbol: String {
         if hasCompletedSoundTest {
             "checkmark.seal.fill"
-        } else if detectionInputMode == .microphone {
-            "mic.fill"
         } else if availability == .unsupported {
             availability.systemImage
         } else {
@@ -549,18 +439,10 @@ private struct SensorScannerView: View {
             return .mint
         }
 
-        if detectionInputMode == .microphone {
-            return .yellow
-        }
-
         return isSoundTestActive ? .cyan : .white
     }
 
     private var pulseTint: Color {
-        if detectionInputMode == .microphone && !hasCompletedSoundTest {
-            return .yellow
-        }
-
         return isSoundTestActive ? .cyan : scannerTint
     }
 

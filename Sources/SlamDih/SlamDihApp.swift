@@ -7,20 +7,29 @@ struct SlamDihApp: App {
     @Environment(\.openWindow) private var openWindow
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @State private var monitor = SlapMonitor()
+    @State private var hotKeyController = GlobalHotKeyController()
     @State private var updateController = UpdateController()
 
     var body: some Scene {
         WindowGroup("SlamDih", id: "main") {
-            if hasCompletedOnboarding {
-                ContentView(monitor: monitor) {
-                    resetOnboarding()
+            Group {
+                if hasCompletedOnboarding {
+                    ContentView(monitor: monitor) {
+                        resetOnboarding()
+                    }
+                    .frame(minWidth: 920, minHeight: 620)
+                } else {
+                    OnboardingView(monitor: monitor) {
+                        finishOnboarding()
+                    }
+                    .frame(minWidth: 920, minHeight: 620)
                 }
-                .frame(minWidth: 920, minHeight: 620)
-            } else {
-                OnboardingView(monitor: monitor) {
-                    finishOnboarding()
+            }
+            .modifier(MonitorPersistenceModifier(monitor: monitor))
+            .onAppear {
+                hotKeyController.register {
+                    monitor.toggleMute()
                 }
-                .frame(minWidth: 920, minHeight: 620)
             }
         }
         .windowStyle(.hiddenTitleBar)
@@ -36,6 +45,11 @@ struct SlamDihApp: App {
                     monitor.playTestSound()
                 }
                 .keyboardShortcut("t", modifiers: [.command])
+
+                Button(monitor.muteActionTitle) {
+                    monitor.toggleMute()
+                }
+                .keyboardShortcut("m", modifiers: [.command, .shift])
 
                 Button("Check for Updates...") {
                     updateController.checkForUpdates()
@@ -87,6 +101,49 @@ struct SlamDihApp: App {
     }
 }
 
+private struct MonitorPersistenceModifier: ViewModifier {
+    @Bindable var monitor: SlapMonitor
+
+    @AppStorage("threshold") private var persistedThreshold = 0.75
+    @AppStorage("slapCount") private var persistedSlapCount = 0
+    @State private var didLoadPersistedValues = false
+
+    func body(content: Content) -> some View {
+        content
+            .onAppear {
+                guard !didLoadPersistedValues else {
+                    return
+                }
+
+                didLoadPersistedValues = true
+                monitor.applyPersistedValues(
+                    threshold: persistedThreshold,
+                    slapCount: persistedSlapCount
+                )
+            }
+            .onChange(of: monitor.threshold) { _, newValue in
+                persistedThreshold = SlapMonitor.steppedThreshold(newValue)
+            }
+            .onChange(of: monitor.slapCount) { _, newValue in
+                persistedSlapCount = max(0, newValue)
+            }
+            .onChange(of: persistedThreshold) { _, newValue in
+                let steppedValue = SlapMonitor.steppedThreshold(newValue)
+
+                if monitor.threshold != steppedValue {
+                    monitor.threshold = steppedValue
+                }
+            }
+            .onChange(of: persistedSlapCount) { _, newValue in
+                let safeValue = max(0, newValue)
+
+                if monitor.slapCount != safeValue {
+                    monitor.slapCount = safeValue
+                }
+            }
+    }
+}
+
 private final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         false
@@ -120,6 +177,12 @@ private struct MenuBarPanel: View {
         }
 
         Button {
+            monitor.toggleMute()
+        } label: {
+            Label(monitor.muteActionTitle, systemImage: monitor.muteActionSymbol)
+        }
+
+        Button {
             monitor.resetCounter()
         } label: {
             Label("Reset Counter", systemImage: "arrow.counterclockwise")
@@ -134,7 +197,7 @@ private struct MenuBarPanel: View {
         MenuBarStatButton(
             title: "Sensor",
             value: monitor.sensorStatusTitle,
-            symbol: monitor.detectionInputMode == .microphone ? monitor.detectionInputMode.symbol : monitor.sensorAvailability.systemImage
+            symbol: monitor.sensorAvailability.systemImage
         )
         MenuBarStatButton(title: "Sound", value: monitor.selectedSoundTitle, symbol: monitor.selectedSoundSymbol)
     }

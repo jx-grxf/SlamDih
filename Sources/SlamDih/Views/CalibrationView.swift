@@ -3,42 +3,20 @@ import SwiftUI
 struct CalibrationView: View {
     @Bindable var monitor: SlapMonitor
 
+    @State private var phase: CalibrationPhase = .idle
+    @State private var baselinePeak = 0.0
+    @State private var lightSlapPeak = 0.0
+    @State private var wasMonitoringBeforeCalibration = false
+    @State private var calibrationTask: Task<Void, Never>?
+
     var body: some View {
         VStack(alignment: .leading, spacing: 24) {
             Text("Calibration")
                 .font(.system(size: 38, weight: .bold, design: .rounded))
 
-            VStack(alignment: .leading, spacing: 18) {
-                HStack {
-                    Label("Trigger threshold", systemImage: "slider.horizontal.below.rectangle")
-                    Spacer()
-                    Text("\(monitor.threshold, specifier: "%.2f") g")
-                        .font(.system(.title3, design: .monospaced).weight(.semibold))
-                }
-
-                Slider(value: $monitor.threshold, in: SlapMonitor.thresholdRange, step: SlapMonitor.thresholdStep)
-                    .tint(.mint)
-
-                HStack(spacing: 12) {
-                    CalibrationPreset(title: "Soft", value: 0.45, monitor: monitor)
-                    CalibrationPreset(title: "Balanced", value: 0.75, monitor: monitor)
-                    CalibrationPreset(title: "Hard", value: 1.00, monitor: monitor)
-                }
-            }
-            .padding(18)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
-
-            VStack(alignment: .leading, spacing: 12) {
-                Label("Live impact", systemImage: "waveform.path.ecg")
-                    .font(.headline)
-                ProgressView(value: min(monitor.currentImpact / 2.5, 1.0))
-                    .tint(monitor.currentImpact >= monitor.threshold ? .mint : .orange)
-                Text("\(monitor.currentImpact, specifier: "%.3f") g")
-                    .font(.system(size: 54, weight: .bold, design: .rounded))
-                    .monospacedDigit()
-            }
-            .padding(18)
-            .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+            wizardPanel
+            thresholdPanel
+            liveImpactPanel
 
             Spacer()
         }
@@ -55,6 +33,269 @@ struct CalibrationView: View {
             )
             .ignoresSafeArea()
         }
+        .onChange(of: monitor.currentImpact) { _, impact in
+            recordCalibrationImpact(impact)
+        }
+        .onDisappear {
+            cancelCalibration()
+        }
+    }
+
+    private var wizardPanel: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Label("Calibration Wizard", systemImage: phase.symbol)
+                    .font(.headline)
+                    .symbolRenderingMode(.hierarchical)
+                    .foregroundStyle(phase.tint)
+
+                Spacer()
+
+                Text(phase.badge)
+                    .font(.callout.weight(.semibold))
+                    .foregroundStyle(phase.tint)
+            }
+
+            Text(phase.instruction)
+                .font(.title3.weight(.semibold))
+                .foregroundStyle(.white.opacity(0.86))
+                .fixedSize(horizontal: false, vertical: true)
+
+            HStack(spacing: 12) {
+                PeakReadout(title: "Desk peak", value: baselinePeak, tint: .orange)
+                PeakReadout(title: "Light slap", value: lightSlapPeak, tint: .mint)
+                PeakReadout(title: "Threshold", value: monitor.threshold, tint: .cyan)
+            }
+
+            HStack(spacing: 12) {
+                Button {
+                    startCalibration()
+                } label: {
+                    Label(phase == .idle || phase == .finished ? "Start Wizard" : "Restart", systemImage: "wand.and.stars")
+                        .frame(width: 150)
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .tint(.mint)
+                .disabled(!monitor.canMonitor)
+
+                Button {
+                    cancelCalibration()
+                } label: {
+                    Label("Cancel", systemImage: "xmark.circle")
+                        .frame(width: 110)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.large)
+                .disabled(!phase.isActive)
+
+                if !monitor.canMonitor {
+                    Text("Sensor unavailable")
+                        .font(.callout.weight(.semibold))
+                        .foregroundStyle(.red.opacity(0.86))
+                }
+            }
+        }
+        .padding(18)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+    }
+
+    private var thresholdPanel: some View {
+        VStack(alignment: .leading, spacing: 18) {
+            HStack {
+                Label("Trigger threshold", systemImage: "slider.horizontal.below.rectangle")
+                Spacer()
+                Text("\(monitor.threshold, specifier: "%.2f") g")
+                    .font(.system(.title3, design: .monospaced).weight(.semibold))
+            }
+
+            Slider(value: $monitor.threshold, in: SlapMonitor.thresholdRange, step: SlapMonitor.thresholdStep)
+                .tint(.mint)
+
+            HStack(spacing: 12) {
+                CalibrationPreset(title: "Soft", value: 0.45, monitor: monitor)
+                CalibrationPreset(title: "Balanced", value: 0.75, monitor: monitor)
+                CalibrationPreset(title: "Hard", value: 1.00, monitor: monitor)
+            }
+        }
+        .padding(18)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+    }
+
+    private var liveImpactPanel: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Live impact", systemImage: "waveform.path.ecg")
+                .font(.headline)
+            ProgressView(value: min(monitor.currentImpact / 2.5, 1.0))
+                .tint(monitor.currentImpact >= monitor.threshold ? .mint : .orange)
+            Text("\(monitor.currentImpact, specifier: "%.3f") g")
+                .font(.system(size: 54, weight: .bold, design: .rounded))
+                .monospacedDigit()
+        }
+        .padding(18)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
+    }
+
+    private func startCalibration() {
+        cancelCalibration(restoreMonitoring: false)
+
+        baselinePeak = 0
+        lightSlapPeak = 0
+        wasMonitoringBeforeCalibration = monitor.isMonitoring
+        phase = .deskTap
+
+        calibrationTask = Task { @MainActor in
+            if !monitor.isMonitoring {
+                await monitor.startMonitoring()
+            }
+
+            guard monitor.isMonitoring else {
+                phase = .idle
+                return
+            }
+
+            monitor.status = "Calibration: desk tap"
+            try? await Task.sleep(for: .seconds(3))
+            guard !Task.isCancelled else {
+                return
+            }
+
+            phase = .lightSlap
+            monitor.status = "Calibration: light slap"
+            try? await Task.sleep(for: .seconds(4))
+            guard !Task.isCancelled else {
+                return
+            }
+
+            finishCalibration()
+        }
+    }
+
+    private func cancelCalibration(restoreMonitoring: Bool = true) {
+        calibrationTask?.cancel()
+        calibrationTask = nil
+
+        if restoreMonitoring && phase.isActive && !wasMonitoringBeforeCalibration {
+            monitor.stopMonitoring()
+        }
+
+        if phase.isActive {
+            phase = .idle
+        }
+    }
+
+    private func finishCalibration() {
+        calibrationTask = nil
+
+        let minimumGap = 0.05
+        let noiseFloor = max(baselinePeak, SlapMonitor.thresholdRange.lowerBound)
+        let slapPeak = max(lightSlapPeak, noiseFloor + minimumGap)
+        let suggestedThreshold = max(noiseFloor + minimumGap, slapPeak * 0.72)
+        monitor.threshold = SlapMonitor.steppedThreshold(suggestedThreshold)
+        phase = .finished
+        monitor.status = "Calibration finished"
+
+        if !wasMonitoringBeforeCalibration {
+            monitor.stopMonitoring()
+            monitor.status = "Calibration finished"
+        }
+    }
+
+    private func recordCalibrationImpact(_ impact: Double) {
+        switch phase {
+        case .deskTap:
+            baselinePeak = max(baselinePeak, impact)
+        case .lightSlap:
+            lightSlapPeak = max(lightSlapPeak, impact)
+        case .idle, .finished:
+            return
+        }
+    }
+}
+
+private enum CalibrationPhase {
+    case idle
+    case deskTap
+    case lightSlap
+    case finished
+
+    var isActive: Bool {
+        self == .deskTap || self == .lightSlap
+    }
+
+    var badge: String {
+        switch self {
+        case .idle:
+            "Ready"
+        case .deskTap:
+            "Step 1"
+        case .lightSlap:
+            "Step 2"
+        case .finished:
+            "Done"
+        }
+    }
+
+    var instruction: String {
+        switch self {
+        case .idle:
+            "Run the wizard to measure desk noise first, then a light MacBook slap."
+        case .deskTap:
+            "Tap the desk firmly once, away from the MacBook."
+        case .lightSlap:
+            "Now give the MacBook one light slap."
+        case .finished:
+            "Threshold updated from the measured peaks. Fine-tune with the slider if needed."
+        }
+    }
+
+    var symbol: String {
+        switch self {
+        case .idle:
+            "wand.and.stars"
+        case .deskTap:
+            "deskclock.fill"
+        case .lightSlap:
+            "hand.tap.fill"
+        case .finished:
+            "checkmark.seal.fill"
+        }
+    }
+
+    var tint: Color {
+        switch self {
+        case .idle:
+            .cyan
+        case .deskTap:
+            .orange
+        case .lightSlap:
+            .mint
+        case .finished:
+            .green
+        }
+    }
+}
+
+private struct PeakReadout: View {
+    let title: String
+    let value: Double
+    let tint: Color
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .textCase(.uppercase)
+                .foregroundStyle(.white.opacity(0.52))
+
+            Text("\(value, specifier: "%.3f") g")
+                .font(.system(.title3, design: .monospaced).weight(.semibold))
+                .foregroundStyle(tint)
+                .monospacedDigit()
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(12)
+        .background(.white.opacity(0.06), in: RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 }
 

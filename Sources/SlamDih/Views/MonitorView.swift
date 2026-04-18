@@ -54,6 +54,13 @@ struct MonitorView: View {
                     Image(systemName: "speaker.wave.2.fill")
                 }
                 .help("Test slap sound")
+
+                Button {
+                    monitor.toggleMute()
+                } label: {
+                    Image(systemName: monitor.muteActionSymbol)
+                }
+                .help("Mute sounds")
             }
         }
     }
@@ -71,10 +78,7 @@ struct MonitorView: View {
             Spacer()
 
             HStack(spacing: 10) {
-                SensorHealthBadge(
-                    availability: monitor.sensorAvailability,
-                    inputMode: monitor.detectionInputMode
-                )
+                SensorHealthBadge(availability: monitor.sensorAvailability)
                 StatusPill(isActive: monitor.isMonitoring, text: monitor.status)
             }
         }
@@ -186,6 +190,15 @@ struct ControlPanel: View {
                 .buttonStyle(.bordered)
                 .controlSize(.large)
                 .help("Test sound")
+
+                Button {
+                    monitor.toggleMute()
+                } label: {
+                    Image(systemName: monitor.muteActionSymbol)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.large)
+                .help(monitor.muteActionTitle)
 
                 Button {
                     monitor.resetCounter()
@@ -522,7 +535,6 @@ struct PanelHeader: View {
 
 struct SensorHealthBadge: View {
     let availability: SensorAvailability
-    var inputMode: DetectionInputMode = .accelerometer
 
     var body: some View {
         HStack(spacing: 7) {
@@ -541,22 +553,18 @@ struct SensorHealthBadge: View {
     }
 
     private var title: String {
-        inputMode == .microphone ? "Mic Fallback" : availability.compactTitle
+        availability.compactTitle
     }
 
     private var symbol: String {
-        inputMode == .microphone ? inputMode.symbol : availability.systemImage
+        availability.systemImage
     }
 
     private var help: String {
-        inputMode == .microphone ? "Microphone fallback is not recommended." : availability.title
+        availability.title
     }
 
     private var tint: Color {
-        if inputMode == .microphone {
-            return .yellow
-        }
-
         switch availability {
         case .checking:
             return .cyan

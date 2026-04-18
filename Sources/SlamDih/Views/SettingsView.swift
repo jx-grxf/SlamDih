@@ -3,17 +3,34 @@ import SwiftUI
 struct SettingsView: View {
     @Bindable var monitor: SlapMonitor
 
+    @State private var launchAtLoginController = LaunchAtLoginController()
+
     var body: some View {
         Form {
-            Section("Detection") {
-                Picker("Input", selection: $monitor.detectionInputMode) {
-                    ForEach(DetectionInputMode.allCases) { inputMode in
-                        Label(inputMode.settingsTitle, systemImage: inputMode.symbol)
-                            .tag(inputMode)
-                    }
-                }
-                .pickerStyle(.segmented)
+            Section("General") {
+                Toggle(
+                    "Launch at Login",
+                    isOn: Binding(
+                        get: { launchAtLoginController.isEnabled },
+                        set: { launchAtLoginController.setEnabled($0) }
+                    )
+                )
+                .toggleStyle(.checkbox)
 
+                Text(launchAtLoginController.statusDescription)
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                if let errorMessage = launchAtLoginController.errorMessage {
+                    Text(errorMessage)
+                        .font(.callout)
+                        .foregroundStyle(.red)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+            }
+
+            Section("Detection") {
                 Slider(value: $monitor.threshold, in: SlapMonitor.thresholdRange, step: SlapMonitor.thresholdStep) {
                     Text("Threshold")
                 } minimumValueLabel: {
@@ -26,30 +43,35 @@ struct SettingsView: View {
                     .font(.system(.body, design: .monospaced))
             }
 
-            if monitor.detectionInputMode == .microphone {
-                Section("Microphone Fallback") {
-                    Label("Not recommended", systemImage: "exclamationmark.triangle.fill")
-                        .foregroundStyle(.yellow)
-
-                    Text("This mode listens only on this Mac, does not record or save audio, and never uploads microphone data. It can still trigger on speech, loud noises, and other sharp sounds, and it can increase battery usage.")
-                        .font(.callout)
-                        .foregroundStyle(.secondary)
-                        .fixedSize(horizontal: false, vertical: true)
-
-                    Toggle("I understand this mode is less accurate and can trigger on speech or loud noises.", isOn: $monitor.hasAcceptedMicrophoneAccuracyWarning)
-                    Toggle("I understand microphone access is required, but audio stays local and is not stored.", isOn: $monitor.hasAcceptedMicrophonePrivacyNotice)
-                    Toggle("I understand battery usage can increase while listening through the microphone.", isOn: $monitor.hasAcceptedMicrophoneBatteryWarning)
-                    Toggle("I understand the Apple SPU accelerometer mode is still recommended.", isOn: $monitor.hasAcceptedMicrophoneNotRecommendedWarning)
-                }
-            }
-
             Section("Audio") {
+                Toggle(
+                    "Mute Sounds",
+                    isOn: Binding(
+                        get: { monitor.isMuted },
+                        set: { isMuted in
+                            guard monitor.isMuted != isMuted else {
+                                return
+                            }
+
+                            monitor.toggleMute()
+                        }
+                    )
+                )
+                .toggleStyle(.switch)
+
+                Text("Global shortcut: Command-Shift-M")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+
                 Toggle("Activate NSFW Sounds", isOn: $monitor.isNSFWSoundsEnabled)
                     .toggleStyle(.switch)
             }
         }
         .formStyle(.grouped)
-        .frame(width: 520, height: 520)
+        .frame(width: 520, height: 500)
         .padding()
+        .onAppear {
+            launchAtLoginController.refresh()
+        }
     }
 }

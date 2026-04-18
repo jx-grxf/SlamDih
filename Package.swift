@@ -32,7 +32,9 @@ let package = Package(
             linkerSettings: [
                 .linkedFramework("AppKit"),
                 .linkedFramework("AVFoundation"),
-                .linkedFramework("IOKit")
+                .linkedFramework("Carbon"),
+                .linkedFramework("IOKit"),
+                .linkedFramework("ServiceManagement")
             ]
         ),
         .testTarget(
