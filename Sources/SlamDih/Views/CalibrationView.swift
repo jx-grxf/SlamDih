@@ -10,17 +10,19 @@ struct CalibrationView: View {
     @State private var calibrationTask: Task<Void, Never>?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 24) {
-            Text("Calibration")
-                .font(.system(size: 38, weight: .bold, design: .rounded))
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                Text("Calibration")
+                    .font(.system(size: 38, weight: .bold, design: .rounded))
 
-            wizardPanel
-            thresholdPanel
-            liveImpactPanel
-
-            Spacer()
+                wizardPanel
+                thresholdPanel
+                liveImpactPanel
+            }
+            .frame(maxWidth: .infinity, alignment: .topLeading)
+            .padding(28)
         }
-        .padding(28)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .foregroundStyle(.white)
         .background {
             LinearGradient(
@@ -66,6 +68,7 @@ struct CalibrationView: View {
                 PeakReadout(title: "Light tap", value: lightSlapPeak, tint: .mint)
                 PeakReadout(title: "Threshold", value: monitor.threshold, tint: .cyan)
             }
+            .frame(minHeight: 74)
 
             HStack(spacing: 12) {
                 Button {
@@ -97,6 +100,7 @@ struct CalibrationView: View {
             }
         }
         .padding(18)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
@@ -117,8 +121,10 @@ struct CalibrationView: View {
                 CalibrationPreset(title: "Balanced", value: 0.75, monitor: monitor)
                 CalibrationPreset(title: "Hard", value: 1.00, monitor: monitor)
             }
+            .frame(minHeight: 62)
         }
         .padding(18)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
@@ -133,6 +139,7 @@ struct CalibrationView: View {
                 .monospacedDigit()
         }
         .padding(18)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
