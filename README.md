@@ -4,6 +4,7 @@
 
 **A native macOS utility that turns MacBook motion impacts into local sound feedback.**
 
+![Release](https://img.shields.io/github/v/release/jx-grxf/SlamDih?label=release)
 ![Swift](https://img.shields.io/badge/Swift-6.3-F05138?logo=swift&logoColor=white)
 ![SwiftUI](https://img.shields.io/badge/SwiftUI-native%20macOS-0A84FF)
 ![IOKit](https://img.shields.io/badge/IOKit-HID%20sensor%20stream-2D3748)
@@ -53,7 +54,7 @@ It is built as a private, local-first macOS tool. No sensor data leaves the mach
 | Live telemetry | Shows event count, current impact, peak impact, sample rate, axis values, and raw HID bytes |
 | Adjustable detection | Sensitivity slider, presets, and a guided calibration wizard |
 | Local audio | Bundles impact, air pop, spotlight, alert, and snap sounds as SwiftPM resources and plays the selected one with `AVAudioPlayer` |
-| Mac utility controls | Menu bar controls, launch-at-login, persisted counter and threshold, and a global mute shortcut |
+| Mac utility controls | Menu bar controls, launch-at-login, persisted counter and threshold, a global mute shortcut, and Sparkle update checks |
 | Testable core | Parser and impact detector are separated into a small Swift library with unit tests |
 
 ---
@@ -108,17 +109,18 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift test
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift run SlamDih
 ```
 
-Build a release binary:
+Build a local release app:
 
 ```bash
-DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift build -c release
+./scripts/package-app.sh 0.2.1 3
+open .build/xcode-release/Release/SlamDih.app
 ```
 
-Create a simple `.app` bundle:
+Create the Sparkle-ready release DMG and appcast:
 
 ```bash
-./scripts/package-app.sh
-open .build/release/SlamDih.app
+./scripts/create-dmg.sh 0.2.1 3
+./scripts/generate-appcast.sh .build/dmg
 ```
 
 Open the native Xcode project for app icon editing, signing, archives, and normal macOS app work:
@@ -156,10 +158,16 @@ Run the app in debug mode:
 DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift run SlamDih
 ```
 
-Package the app:
+Package the app through the Xcode project:
 
 ```bash
-./scripts/package-app.sh
+./scripts/package-app.sh 0.2.1 3
+```
+
+Build the release DMG:
+
+```bash
+./scripts/create-dmg.sh 0.2.1 3
 ```
 
 Build through Xcode:
