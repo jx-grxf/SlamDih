@@ -19,6 +19,8 @@ SlamX is a small experimental MacBook utility that listens to the built-in Apple
 
 It is built as a local-first macOS project: motion samples stay on the Mac, no microphone path exists, and live detection is only available on supported MacBooks.
 
+**By using this app, I agree that Johannes is not liable for any damage to the device if you bang on the MacBook as if you were mining diamonds.**
+
 ---
 
 ## Showcase
