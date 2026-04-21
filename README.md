@@ -17,7 +17,7 @@
 
 SlamX is a small experimental MacBook utility that listens to the built-in Apple SPU accelerometer, detects sharp impact spikes, increments a counter, and plays local sound feedback.
 
-It is built as a local-first macOS project: motion samples stay on the Mac, no microphone path exists, and live detection is only available on supported MacBooks.
+It is built as a local macOS project: motion samples stay on the Mac, no microphone path exists, and live detection is only available on supported MacBooks.
 
 ---
 
@@ -64,6 +64,7 @@ It is built as a local-first macOS project: motion samples stay on the Mac, no m
   - [Development](#development)
   - [Research Notes](#research-notes)
   - [Roadmap](#roadmap)
+- [Planned for v0.\<\<\<\>\>\>](#planned-for-v0)
   - [License](#license)
 
 ---
@@ -147,14 +148,14 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift run SlamX
 Build a local release app:
 
 ```bash
-./scripts/package-app.sh 0.2.1 3
+./scripts/package-app.sh 0.3.2 5 / 0.3.3 6 - beta
 open .build/xcode-release/Release/SlamX.app
 ```
 
 Create a local Sparkle-ready DMG and appcast:
 
 ```bash
-./scripts/create-dmg.sh 0.2.1 3
+./scripts/create-dmg.sh 0.3.2 5 / 0.3.3 6 - beta
 ./scripts/generate-appcast.sh .build/dmg
 ```
 
@@ -222,19 +223,19 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer swift run SlamX
 Package the app through the Xcode project:
 
 ```bash
-./scripts/package-app.sh 0.2.1 3
+./scripts/package-app.sh 0.3.2 5 / 0.3.3 6 - beta
 ```
 
 Build the release DMG:
 
 ```bash
-./scripts/create-dmg.sh 0.2.1 3
+./scripts/create-dmg.sh 0.3.2 5 / 0.3.3 6 - beta
 ```
 
 Prepare the full GitHub release asset set:
 
 ```bash
-./scripts/create-release-assets.sh 0.2.1 3
+./scripts/create-release-assets.sh 0.3.2 5 / 0.3.3 6 - beta
 ```
 
 Build through Xcode:
@@ -257,9 +258,8 @@ DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer xcodebuild -project Sla
 
 ## Roadmap
 
-- Hide raw HID telemetry behind an Advanced view for a cleaner public build.
+# Planned for v0.<<<>>>
 - Add Developer ID signing and notarized release packaging after Apple Developer Program enrollment.
-- Refine product copy and screenshots for a broader public launch.
 - Add a signed release workflow after Developer ID credentials are available.
 
 ---
