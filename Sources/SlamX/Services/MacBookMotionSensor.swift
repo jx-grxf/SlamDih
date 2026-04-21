@@ -20,6 +20,7 @@ enum MotionSensorError: LocalizedError {
 final class MacBookMotionSensor: MotionSensorStreaming {
     private let reportBuffer: UnsafeMutablePointer<UInt8>
     private let reportLength: Int
+    private let wakesSPUDriverBeforeStart: Bool
     private let callbackQueue = DispatchQueue(
         label: "com.johannesgrof.slamx.motion-sensor",
         qos: .userInteractive
@@ -27,8 +28,9 @@ final class MacBookMotionSensor: MotionSensorStreaming {
     private var device: IOHIDDevice?
     private var sampleHandler: SampleHandler?
 
-    init(reportLength: Int = 22) {
+    init(reportLength: Int = 22, wakesSPUDriverBeforeStart: Bool = false) {
         self.reportLength = reportLength
+        self.wakesSPUDriverBeforeStart = wakesSPUDriverBeforeStart
         self.reportBuffer = UnsafeMutablePointer<UInt8>.allocate(capacity: reportLength)
         self.reportBuffer.initialize(repeating: 0, count: reportLength)
     }
@@ -40,6 +42,9 @@ final class MacBookMotionSensor: MotionSensorStreaming {
 
     func start(sampleHandler: @escaping SampleHandler) throws {
         stop()
+        if wakesSPUDriverBeforeStart {
+            Self.wakeSPUDrivers()
+        }
 
         guard let device = Self.createAccelerometerDevice() else {
             throw MotionSensorError.deviceNotFound
@@ -90,6 +95,33 @@ final class MacBookMotionSensor: MotionSensorStreaming {
 
         IOHIDDeviceClose(device, IOOptionBits(kIOHIDOptionsTypeNone))
         return true
+    }
+
+    private static func wakeSPUDrivers(reportIntervalMicroseconds: Int32 = 10_000) {
+        let matchingDictionary = IOServiceMatching("AppleSPUHIDDriver")
+        var iterator: io_iterator_t = 0
+
+        guard IOServiceGetMatchingServices(kIOMainPortDefault, matchingDictionary, &iterator) == kIOReturnSuccess else {
+            return
+        }
+
+        defer {
+            IOObjectRelease(iterator)
+        }
+
+        while true {
+            let service = IOIteratorNext(iterator)
+            guard service != 0 else {
+                break
+            }
+            defer {
+                IOObjectRelease(service)
+            }
+
+            setRegistryInt(service, key: "SensorPropertyReportingState", value: 1)
+            setRegistryInt(service, key: "SensorPropertyPowerState", value: 1)
+            setRegistryInt(service, key: "ReportInterval", value: reportIntervalMicroseconds)
+        }
     }
 
     private func handleReport(_ report: [UInt8]) {
@@ -155,5 +187,14 @@ final class MacBookMotionSensor: MotionSensorStreaming {
         }
 
         return value.intValue
+    }
+
+    private static func setRegistryInt(_ service: io_service_t, key: String, value: Int32) {
+        var mutableValue = value
+        guard let number = CFNumberCreate(kCFAllocatorDefault, .sInt32Type, &mutableValue) else {
+            return
+        }
+
+        IORegistryEntrySetCFProperty(service, key as CFString, number)
     }
 }
