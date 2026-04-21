@@ -17,9 +17,7 @@ enum MotionSensorError: LocalizedError {
     }
 }
 
-final class MacBookMotionSensor {
-    typealias SampleHandler = @Sendable (MotionSample) -> Void
-
+final class MacBookMotionSensor: MotionSensorStreaming {
     private let reportBuffer: UnsafeMutablePointer<UInt8>
     private let reportLength: Int
     private let callbackQueue = DispatchQueue(
